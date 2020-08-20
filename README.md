@@ -48,7 +48,11 @@ In case the calculated digest of the diploma matches the digest of the provided 
 The Issuer ID identifies the HEI that issued the diploma. You don't have to provide the address of the HEI's contract because the QualiChain Recruiting module gets it from the QualiChain Consortium smart contract, explained below.
 
 **Note**: if you created a new HEI with the QualiChain Higher Education Module (above), you first must add it to the consortium before being able to run the QualiChain Recruiting. For that, you must first run the QualiChain Consortium module to register the new HEI (below).
-
+## Troubleshooting
+If the setup fails, run ``sudo apt-get install build-essential
+                         ``
+                         followed by ``rm package-lock.json && rm -rf node_modules && rm -rf ~/.node-gyp
+                                       ``. Finally, run ``npm run first-setup``
 ## Contributors
 
 Rafael Belchior, rafael.belchior at tecnico.ulisboa.pt 
