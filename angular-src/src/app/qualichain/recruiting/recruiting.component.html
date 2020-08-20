@@ -1,0 +1,73 @@
+<flash-messages></flash-messages>
+
+
+<body class="bg-light">
+
+<div class="container">
+  <div class="row centered">
+    <div class="col-6 col-md-4 shadow">
+      <form #form="ngForm" class="form-signin" (ngSubmit)="validateCertificate(form)">
+      <br>
+      <br>
+      <img class="mb-4" src="http://qualichain.epu.ntua.gr/assets/img/qualichain-logo.png" alt="" width="300" height="72">
+
+      <h1 class="h3 mb-3 font-weight-normal">Recruiting Component</h1>
+      <label for="inputDID" class="sr-only">DID</label>
+
+    <input name="inputDID" ngModel type="text" id="inputDID" class="form-control" placeholder="IssuerID (Smart contract address WITHOUT did:ethr:)" required autofocus>
+    <label for="inputCivilID" class="sr-only">CivilID</label>
+        <br>
+    <input name="inputCivilID" ngModel type="text" id="inputCivilID" class="form-control" placeholder="CivilID (e.g., 12345678)" required>
+        <br>
+    <input
+                    name="certificate"
+                  ngModel
+                  type="file"
+                 id="myCertificate"
+
+                 (change)="handleFileInput($event.target.files)">
+        <label for="file">Choose File</label>
+
+        <br>
+        <br>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Verify Certificate</button>
+        <br>
+        <br>
+
+        <br>
+    </form>
+  </div>
+  <div class="col-12 col-md-8">
+    <div class="card bg-light mb-3" >
+      <div class="card-body">
+          <h5 class="card-title"><b>{{status}}</b></h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{validationStatus}}</h6>
+        <div id="responseBox" class="alert alert-primary" role="alert">
+            {{response}}
+        </div>
+        <p id="responseBoxError" class="alert alert-danger">
+            {{errorBox}}
+        </p>
+      </div>
+    </div>
+
+
+      <div class="card bg-light mb-3" id = "instructions">
+      <div class="card-body">
+          <flash-messages></flash-messages>
+
+          <h5 class="card-title"><b>Instructions</b></h5>
+          <p>1. Input the address of the account used to upload the certificate ("0x2CefB619218825C0c670D8E77f7039e0693E1dDC" by default).</p>
+          <p>2. Input the civil ID. The Civil ID should be the same as the name of the certificate (pdf file) (e.g., 12345678)</p>
+          <p>3. Select the certificate to validate (e.g., 12345678.pdf)</p>
+
+      </div>
+    </div>
+  </div>
+  </div>
+  <br>
+  <br>
+  <br>
+  <br>
+
+</div>

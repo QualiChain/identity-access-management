@@ -1,0 +1,42 @@
+<nav [className]="navbarVisible ? 'navbar navbar-expand-lg navbar-primary fixed-top show-our-nav' : 'navbar navbar-expand-lg navbar-primary fixed-top hide-our-nav'"  role="navigation" color-on-scroll="500">
+
+    <div class="container px-5">
+        <div class="navbar-translate">
+            <a [routerLink]="['/']">
+                <img style="max-height: 40px;" src="http://qualichain.epu.ntua.gr/assets/img/qualichain-logo.png" alt="qualichain">
+            </a>
+        </div>
+        <button class="navbar-toggler" type="button"
+                (click)="toggleNavbar()">
+            <i id="hamburger-icon" class="fa fa-bars fa-2x"></i>
+        </button>
+
+        <div class="collapse navbar-collapse"
+         [ngClass]="{ 'show': navbarOpen }">
+
+            <ul class="navbar-nav">
+               <!-- <li [routerLinkActive]="['active']" class="nav-item">
+
+                    <a class="nav-link" [routerLink]="['/hashcode']" >
+                        <img src="https://media.discordapp.net/attachments/316948358856179723/534067568617717773/ghc.png" style="height:25px;">
+                        <p>hash code</p>
+                    </a>
+                </li> -->
+                <li [routerLinkActive]="['active']" class="nav-item">
+                    <a class="nav-link" [routerLink]="['/recruiting']"
+                                        [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
+                        <p>Qualichain Recruiting Module</p>
+                    </a>
+                </li>
+
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<div *ngIf="navbarOpen"  id="overlay" (click)="toggleNavbar()">
+</div>
+
+

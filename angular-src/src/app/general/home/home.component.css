@@ -1,0 +1,155 @@
+#fullscreen_intro{
+    background-color: #1c2d39;
+    display: table;
+    height: 100vh;
+    position: relative;
+    width: 100%;
+    background-size: cover;
+  }
+  #logo{
+    max-width: 450px;
+    padding-bottom: 25px;
+  }
+  .landing-text { 
+    display:table-cell;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+}
+
+
+/*css of the arrow*/
+#more-arrows {
+  width: 75px;
+  height: 65px;
+  padding-bottom: 0;
+}
+#more-arrows:hover polygon {
+  fill: #FFF;
+  transition: all .2s ease-out;
+}
+#more-arrows:hover polygon.arrow-bottom {
+  -webkit-transform: translateY(-18px);
+          transform: translateY(-18px);
+}
+#more-arrows:hover polygon.arrow-top {
+  -webkit-transform: translateY(18px);
+          transform: translateY(18px);
+}
+
+polygon {
+  fill: #FFF;
+  transition: all .2s ease-out;
+}
+polygon.arrow-middle {
+  opacity: 0.75;
+}
+polygon.arrow-top {
+  opacity: 0.5;
+}
+
+
+
+  #fullscreen_thesis{
+    background: url(https://s3.amazonaws.com/libapps/accounts/47442/images/selection.jpg) no-repeat center center fixed;
+    display: table;
+    height: 100vh;
+    position: relative;
+    width: 100%;
+    background-size: cover;
+
+  }
+  .thesis-text { 
+    display:table-cell;
+    text-align: right;
+    vertical-align: middle;
+    color: white;
+    padding-right: 60px;
+    padding-left: 60px;
+    line-height: 5;
+  }
+  .thesis-btn{
+    width: 12rem;
+    border-width: 2px;
+    border-radius: 100px;
+    background-color: #0f7699;
+    border-color: #0f7699;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1rem;
+  }
+  .thesis-btn:hover{
+    background-color:#084053;
+    border-color:#084053;
+  }
+
+  #fullscreen_hash{
+    display: table;
+    height: 100vh;
+    position: relative;
+    width: 100%;
+    background-size: cover;
+
+  }
+  .hash-text { 
+    display:table-cell;
+    text-align: left;
+    vertical-align: middle;
+    color: white;
+    padding-right: 60px;
+    padding-left: 60px;
+    line-height: 5;
+  }
+
+  #fullscreen_articles{
+
+   display: table;
+    height: 100vh;
+    position: relative;
+    width: 100%;
+    background-size: cover;
+
+  }
+  .articles-text { 
+    display:table-cell;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    /*padding-right: 60px;
+    padding-left: 60px;*/
+    line-height: 5;
+  }
+
+/*Removes dotted border from links*/
+  a{
+      outline: 0;
+  }
+/*Forces paragraphs line-height so normalize*/
+  p{
+    line-height: normal;
+  }
+
+/*Removes blue outline from buttons*/
+  .btn:focus,.btn:active {
+    outline: none !important;
+    box-shadow: none;
+  }
+
+
+
+
+/* For width 400px or smaller: */
+@media only screen and (max-width: 455px) {
+  #logo {
+    max-width: 340px;
+  }
+  .hash-text { 
+    text-align: center;
+  }
+  .thesis-text { 
+    text-align: center;
+  }
+  .articles-text {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+}

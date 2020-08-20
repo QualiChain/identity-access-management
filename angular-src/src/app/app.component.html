@@ -1,0 +1,10 @@
+<div (scroll)="scrollHandler($event)"> 
+
+
+<app-navbar [navbarVisible]="navbarVisible"></app-navbar>
+<!--<app-feedback></app-feedback>-->
+<flash-messages></flash-messages>
+<router-outlet (activate)="onActivate($event)"></router-outlet>
+<app-footer *ngIf="controlVariable"></app-footer>
+
+</div>
