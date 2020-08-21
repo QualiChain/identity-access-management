@@ -15,12 +15,12 @@ export class ValidateService {
     return parseInt(civilID);
   }
 
-  validateCertificate(uploded, certificateName)  {
-    if (!uploded)  {
+  validateCertificate(uploded, certificate)  {
+    if (!uploded || certificate === null)  {
       return false;
     }
     const re = /^.*\.(pdf|PDF)$/;
-    return re.test(certificateName.toLowerCase());
+    return re.test(certificate.name.toLowerCase());
   }
 
 }

@@ -49,7 +49,7 @@ export class RecruitingComponent implements OnInit {
 
 
       if (!this.validateService.validateAddress(data.did))  {
-          this.flashMessage.show('Please insert a valid DID (see examples)', {cssClass: 'alert-danger', timeout: 3000});
+          this.flashMessage.show('Please insert a valid address (see examples)', {cssClass: 'alert-danger', timeout: 3000});
           return false;
       }
 
@@ -59,7 +59,7 @@ export class RecruitingComponent implements OnInit {
       }
 
       if (!this.validateService.validateCertificate(this.uploaded,this.fileToUpload))  {
-          this.flashMessage.show('Please insert a valid certificate (.pdf)', {cssClass: 'alert-danger', timeout: 5000});
+          this.flashMessage.show('Please insert a valid certificate (.pdf)', {cssClass: 'alert-danger', timeout: 3000});
           return false;
       }
       const formData: FormData = new FormData();
@@ -74,16 +74,17 @@ export class RecruitingComponent implements OnInit {
           this.status = 'Done'
           console.log(data);
           if (data.succeeded) {
-              this.error = false;
-            this.validationStatus = 'Success'
-            this.response = data.message + ' - Certificate hash is: ' + data.response_data;
-              document.getElementById('responseBoxError').innerHTML = '';
+                this.error = false;
+                this.validationStatus = 'Success'
+                this.response = data.message + ' - Certificate hash is: ' + data.response_data;
+                document.getElementById('responseBoxError').innerHTML = '';
         }   else {
-              this.error = true;
-              this.validationStatus = 'Error'
-            this.response = data.message;
-            this.errorBox = data.error;
-        }
+                this.error = true;
+                this.validationStatus = 'Error'
+                this.response = data.message;
+                this.errorBox = data.error;
+                document.getElementById('responseBoxError').innerText = data.error
+          }
 
       }, error => {
         this.status = 'Error';

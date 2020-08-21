@@ -33,6 +33,7 @@
     <button class="btn btn-lg btn-primary btn-block" type="submit">Verify Certificate</button>
         <br>
         <br>
+          <flash-messages></flash-messages>
 
         <br>
     </form>
@@ -45,16 +46,15 @@
         <div id="responseBox" class="alert alert-primary" role="alert">
             {{response}}
         </div>
-        <p id="responseBoxError" class="alert alert-danger">
+        <div id="responseBoxError" class="alert alert-danger">
             {{errorBox}}
-        </p>
+        </div>
       </div>
     </div>
 
 
       <div class="card bg-light mb-3" id = "instructions">
       <div class="card-body">
-          <flash-messages></flash-messages>
 
           <h5 class="card-title"><b>Instructions</b></h5>
           <p>1. Input the address of the account used to upload the certificate ("0x2CefB619218825C0c670D8E77f7039e0693E1dDC" by default).</p>
