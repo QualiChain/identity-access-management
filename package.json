@@ -23,6 +23,7 @@
     "build": "",
     "generate-api-docs": "apidoc  -i server -o docs",
     "generate-js-docs": "jsdoc server",
+    "heroku-prebuild": "rm package-lock.json && rm -rf node_modules && rm -rf ~/.node-gyp",
     "heroku-postbuild": "cd angular-src && npm install"
   },
   "nodemonConfig": {
@@ -43,6 +44,7 @@
     "express": "^4.17",
     "express-formidable": "^1.2.0",
     "hashmap": "^2.3.0",
+    "node-gyp": "7.1.0",
     "helmet": "^3.21.2",
     "hoek": "^5.0.4",
     "htmlparser2": "^3.9.2",

@@ -9,7 +9,7 @@
       <form #form="ngForm" class="form-signin" (ngSubmit)="validateCertificate(form)">
       <br>
       <br>
-      <img class="mb-4" src="http://qualichain.epu.ntua.gr/assets/img/qualichain-logo.png" alt="" width="300" height="72">
+      <img class="mb-4" src="https://web.ist.utl.pt/~ist180970/assets/img/qualichain-logo.png" alt="" width="300" height="72">
 
       <h1 class="h3 mb-3 font-weight-normal">Recruiting Component</h1>
       <label for="inputDID" class="sr-only">DID</label>
@@ -33,6 +33,7 @@
     <button class="btn btn-lg btn-primary btn-block" type="submit">Verify Certificate</button>
         <br>
         <br>
+          <flash-messages></flash-messages>
 
         <br>
     </form>
@@ -45,16 +46,15 @@
         <div id="responseBox" class="alert alert-primary" role="alert">
             {{response}}
         </div>
-        <p id="responseBoxError" class="alert alert-danger">
+        <div id="responseBoxError" class="alert alert-danger">
             {{errorBox}}
-        </p>
+        </div>
       </div>
     </div>
 
 
       <div class="card bg-light mb-3" id = "instructions">
       <div class="card-body">
-          <flash-messages></flash-messages>
 
           <h5 class="card-title"><b>Instructions</b></h5>
           <p>1. Input the address of the account used to upload the certificate ("0x2CefB619218825C0c670D8E77f7039e0693E1dDC" by default).</p>
