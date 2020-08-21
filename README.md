@@ -6,7 +6,7 @@
 ![web][logo]
 
 
-[logo]: http://qualichain.epu.ntua.gr/assets/img/qualichain-logo.png
+[logo]: https://web.ist.utl.pt/~ist180970/assets/img/qualichain-logo.png
 A webapp for the Qualichain Portuguese PoC. The Qualichain Portuguese PoC is about the interaction between a higher education organization, IST (or Técnico Lisboa), and a recruiting organization, AMA.
 Currently it supports only the Qualichain Recruiting module.
 
