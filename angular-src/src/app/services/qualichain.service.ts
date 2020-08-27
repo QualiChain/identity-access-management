@@ -30,6 +30,8 @@ export class QualichainService {
       let headers = new Headers();
       if (Vars.ENVIRONMENT === 'PRODUCTION')    {
           this.url = "qualichain/validateCertificate";
+      } else if (Vars.ENVIRONMENT === 'INTEGRATION')    {
+          this.url = "https://qualichain.herokuapp.com/qualichain/validateCertificate";
       }
 
       headers.append('Content-Type', 'application/json');
