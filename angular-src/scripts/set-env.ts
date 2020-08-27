@@ -22,7 +22,7 @@ require('dotenv').config({ path: path.join(__dirname, 'set-env.env')});
 const targetPath = `./.env.ts`;
 const envConfigFile = `
 export const Vars = {
-  FENIX_CLIENT_ID: "${process.env.FENIX_CLIENT_ID}",
+  ENVIRONMENT: "${process.env.ENVIRONMENT}",
   REDIRECT_URL: "${process.env.REDIRECT_URL}",
   GOOGLE_MAPS: "${process.env.GOOGLE_MAPS_KEY}"
 };

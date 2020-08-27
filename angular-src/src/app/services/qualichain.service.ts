@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http, Headers} from '@angular/http';
 import { AuthService} from './auth.service';
 import { map } from 'rxjs/operators';
+import { Vars } from '../../../.env'
+
 import { Subject, Observable, throwError } from 'rxjs';
 import {
     HttpRequest,
@@ -23,7 +25,13 @@ export class QualichainService {
       console.log(formData.get('file'))
       console.log(formData.get('did'))
       console.log(formData.get('civilId'))
-    let headers = new Headers();
+      console.log("Env Vars")
+      console.log(Vars)
+      let headers = new Headers();
+      if (Vars.ENVIRONMENT === 'PRODUCTION')    {
+          this.url = "qualichain/validateCertificate";
+      }
+
       headers.append('Content-Type', 'application/json');
     //optional
     //this.authService.loadTokenUser(headers);
