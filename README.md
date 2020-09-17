@@ -1,7 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 
-# Qualichain Recruiting webapp
+# Recruiter webapp
 
 ![web][logo]
 
