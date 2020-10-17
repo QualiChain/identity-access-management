@@ -12,6 +12,7 @@ function Utils() {
     this.quickSave = quickSave;
     this.quickRemove = quickRemove;
     this.comparePassword = comparePassword;
+    this.comparePasswordAsync = comparePasswordAsync;
     this.utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
     this.time = new Date().toJSON().slice(0,16).replace(/-/g,'/') + "h";
 }
@@ -105,11 +106,13 @@ function comparePassword(candidatePw, hash, callback) {
 
     bcrypt.compare(candidatePw, hash, (err, isMatch) => {
         if (err) {
-            //TODO: Fix
-            //Explodes when manually changing field "__t" of entity
             throw err;
         }
         callback(null, isMatch);
 
     })
+}
+
+async function comparePasswordAsync (candidatePw, pwHash)   {
+    return  bcrypt.compare(candidatePw, pwHash)
 }

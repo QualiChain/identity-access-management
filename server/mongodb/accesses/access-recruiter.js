@@ -9,7 +9,6 @@ let TYPE = 'RECRUITER';
 
 class AccessRecruiter {
     constructor() {
-        this.findCompanyById = AccessUser.getUserById;
         this.getRecruiterByEmail = AccessUser.getUserByEmail;
         this.addRecruiter = addRecruiter;
         this.updateRecruiter = updateRecruiter;

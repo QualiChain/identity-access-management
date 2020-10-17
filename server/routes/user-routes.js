@@ -67,7 +67,7 @@ router.post('/login', (req, res) => {
     const email = req.fields.username;
     const password = req.fields.password;
 
-    DBAccess.users.getUserByEmail(email, (err, user) => {
+    DBAccess.users.getUserByEmail(email,async (err, user) => {
         if (err) {
             throw err;
         }
@@ -76,68 +76,38 @@ router.post('/login', (req, res) => {
         }
 
         if(user.validation === "confirmed") {
-            Utils.comparePassword(password, user.password, (err, isMatch) => {
-                if (err) {
-                    throw err;
-                } else if (!isMatch) {
-                    return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1 + user.remaining_attempts + WRONG_PASSWORD_PART_2);
-                    /*remaining_attempts = user.remaining_attempts - 1;
-                    if (remaining_attempts === 0) {
-                        DBAccess.recruiter.blockAccount(email,(err) =>{
-                            if (err)    {
-                                throw(err);
-                            }
-                            return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_INVALIDATE);
-                        });
-                    } else  {
-                        DBAccess.recruiter.decrementAttempts(email,(err,user) =>{
-                            if (err)    {
-                                throw(err);
-                            }
-                            return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1 + user.remaining_attempts + WRONG_PASSWORD_PART_2);
-                        });
-                    }
+            try {
+                var passwordsMatch = await Utils.comparePasswordAsync(password, user.password);
+            }   catch (e)   {
+                throw err;
+            }
 
-                } else {
-                    DBAccess.recruiter.resetAttempts(email,(err) =>{
-                        if (err)    {
-                            throw(err);
-                        }
-                    });
-                */
-                    console.log("New Login, token content: \n", user._doc);
-                    const token = jwt.sign(user._doc, dbConfig.DB_SECRET, {
-                        expiresIn: 10800
-                    });
+            if (!passwordsMatch)    {
+                return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1 + user.remaining_attempts + WRONG_PASSWORD_PART_2);
+            }   else    {
 
-                    let data =    {
-                        success: true,
-                        token: 'bearer ' + token,
-                        user: {
-                            id: user.id,
-                            name: user.name,
-                            email: user.email,
-                            roles: user.roles,
-                        },
-                    };
+                console.log("New Login, token content: \n", user._doc);
+                const token = jwt.sign(user._doc, dbConfig.DB_SECRET, {
+                    expiresIn: 10800
+                });
+
+                let data =    {
+                    success: true,
+                    token: 'bearer ' + token,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        email: user.email,
+                        roles: user.roles,
+                    },
+                };
 
 
-                    //logger.warn("Login: "+ data.user.type + "," + data.user.name + ", logged in at " + Utils.utc);
-                    ba_logger.ba("Login:" + data.user.id + ":" + data.user.email);
-                    UtilsRoutes.replySuccess(res, data, "Logged in");
-                }
-
-            });
+                //logger.warn("Login: "+ data.user.type + "," + data.user.name + ", logged in at " + Utils.utc);
+                ba_logger.ba("Login:" + data.user.id + ":" + data.user.email);
+                UtilsRoutes.replySuccess(res, data, "Logged in");
+            }
         }
-        /*else if (user.validation === "invalid")  {
-            ba_logger.admin("Login:Invalidated user:" + user.name + "tried to login:");
-            return UtilsRoutes.replyFailure(res, err, USER_INVALID);
-        } else if (user.validation === "unconfirmed")   {
-
-            ba_logger.admin("Login:Unconfirmed user:" + user.name + ":tried to login:");
-            return UtilsRoutes.replyFailure(res, err, USER_UNCONFIRMED);
-        }*/
-
     });
 });
 
