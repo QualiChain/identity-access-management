@@ -8,13 +8,10 @@ function Utils() {
     this.roleIs = roleIs;
     this.saveFile = saveFile;
     this.routeIsBlocked = false;
-    this.isFromAdministration = isFromAdministration;
 }
 
 let utils = module.exports = exports = new Utils;
 
-//For extra security, use environment variables instead of hardcoding.
-let adminArray = ["rafael.belchior@tecnico.ulisboa.pt"];
 /*****************************
  Quick Replies
  *****************************/
@@ -61,10 +58,4 @@ function saveFile(data, name) {
         ba_logger.ba("BA|"+ "FILE_SAVED|" + name + "|" + new Date());
     });
 
-}
-
-function isFromAdministration(req) {
-    const admins = new Set(adminArray);
-    const user = req.user.email;
-    return admins.has(user);
 }
