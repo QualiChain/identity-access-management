@@ -13,6 +13,28 @@ const formidable = require('express-formidable');
 const node_env = process.env.NODE_ENV;
 const DB_SECRET = process.env.DB_SECRET;
 const DB_PRODUCTION = process.env.DB_PRODUCTION;
+const mongoose = require('mongoose');
+const Utils = require('./server/mongodb/accesses/utils-accesses');
+
+// Configuration ===========================================
+let appConfig = require('./config/app');
+let port = process.env.PORT || appConfig.ports[node_env];
+let dbConfig = require('./config/db');
+
+
+
+mongoose.connect(dbConfig.urls[node_env], { useNewUrlParser: true, keepAlive: 1, connectTimeoutMS: 30000,
+    keepAlive: 1, connectTimeoutMS: 30000 });
+
+mongoose.connection.on("connected", () => {
+    logger.info("Connected to MongoDB on " + dbConfig.urls[node_env]);
+});
+mongoose.connection.on("error", (dbError) => {
+    logger.error("Could not connect to database on: " + dbConfig.urls[node_env]);
+    throw new Error(dbError);
+});
+mongoose.set('useCreateIndex', true);
+
 
 
 
@@ -36,19 +58,34 @@ if(!DB_PRODUCTION && node_env === "production") {
     console.error("Production DB not set. Please export the environment variable");
 }
 
-// Configuration ===========================================
-let appConfig = require('./config/app');
-let port = process.env.PORT || appConfig.ports[node_env];
 
 //Initialize app
 const app = express();
+// Body Parser Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+require('./config/passport')(passport);
+
 
 // enable CORS without external module
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Content-Length, Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header('Access-Control-Allow-Methods', '*');
+//  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+// res.header("Access-Control-Allow-Credentials", "true");
+    if ('OPTIONS' === req.method) {
+        //respond with 200
+    }
     next();
 });
+
+
+
 
 app.use(formidable());
 
@@ -72,10 +109,6 @@ app.use(helmet({
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Body Parser Middleware
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
 
 
 // Routes
