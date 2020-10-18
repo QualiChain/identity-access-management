@@ -19,11 +19,26 @@ import { Vars } from  '../../.env';
 import { ChartsModule } from 'ng2-charts';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { RecruitingComponent } from './qualichain/recruiting/recruiting.component'
+import { RegisterComponent} from './general/register/register.component';
+import { CompanyRegisterComponent } from './general/register/company-register/company-register.component';
+import { LoginComponent } from './general/login/login.component';
+import { LoginStudentComponent } from './general/login/login-student/login-student.component';
+import { ProfileComponent } from './general/profile/profile.component';
+
 
 const appRoutes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'recruiting', component: RecruitingComponent},
+    {path: 'register', children: [
+            {path: '', component: RegisterComponent},
+            {path: 'company', component: CompanyRegisterComponent}
+        ]},
+    {path: 'profile', component: ProfileComponent, canActivate:[AuthGuardService]},
 
+    {path: 'login', children: [
+            {path: '', component: LoginComponent},
+            {path: 'student', component: LoginStudentComponent},
+        ]},
 
     {path: 'privacy-policy', component: PrivacyPolicyComponent},
 
@@ -32,7 +47,12 @@ const appRoutes: Routes = [
 @NgModule({
     declarations: [
         AppComponent,
+        ProfileComponent,
+        RegisterComponent,
+        CompanyRegisterComponent,
         NavbarComponent,
+        LoginComponent,
+        LoginStudentComponent,
         HomeComponent,
         FooterComponent,
         PrivacyPolicyComponent,

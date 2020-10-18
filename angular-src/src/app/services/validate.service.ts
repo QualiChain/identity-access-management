@@ -23,4 +23,25 @@ export class ValidateService {
     return re.test(certificate.name.toLowerCase());
   }
 
+  validateRegisterCompany(company)  {
+    if (company.name == null || company.email == null
+        || company.description == null || company.location == null
+        || company.contact == null || company.password == null
+        || company.confirmPassword == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  validateLogin(item) {
+    console.log(item);
+    return item;
+  }
+
+  samePasswords(password, confirmPassoword)  {
+    return password === confirmPassoword;
+  }
+
+
 }
