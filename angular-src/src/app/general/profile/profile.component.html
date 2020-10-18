@@ -1,0 +1,81 @@
+    <div class="container middlePage">
+
+    <div class="row">
+            <div class="col-lg-auto">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Profile</div>
+                    <div class="panel-body">
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Role</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ user.name}}</td>
+                                <td>{{ user.email}}</td>
+                                <td>{{ user.roles}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="row">
+            <div class="col-lg-auto">
+                <div class="panel panel-info">
+                    <div class="panel-body">
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Auth. Token</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+
+                                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                                        Show
+                                    </button>
+                                    <div class="collapse" id="collapseExample">
+                                        <div class="card card-body">
+                                            {{ authToken}}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="row">
+        <div class="col-3">
+            <button class="btn-dark"  (click)="iAmStudent()" >Click me if you are a student</button>
+        </div>
+        <div class="col-3">
+            <button class="btn-dark"  (click)="iAmProfessor()" >Click me if you are a professor</button>
+        </div>
+        <div class="col-3">
+            <button class="btn-primary"  (click)="iAmRecruiter()" >Click me if you are a recruiter</button>
+        </div>
+        <div class="col-3">
+            <button class="btn-dark"  (click)="iAmAcademic()" >Click me if you are an student or professor</button>
+        </div>
+    </div>
+        <div id="responseBox" class="" role="alert">
+            {{response}}
+        </div>
+        <div id="responseBoxError" class="">
+            {{errorBox}}
+        </div>
+</div>

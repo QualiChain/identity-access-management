@@ -29,7 +29,30 @@
                     </a>
                 </li>
 
+                <li [routerLinkActive]="['active']" class="nav-item">
+                    <a class="nav-link" [routerLink]="['/register']"
+                                        [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
+                        <p>Register</p>
+                    </a>
+                </li>
 
+                <li [routerLinkActive]="['active']" class="nav-item">
+                    <a class="nav-link" [routerLink]="['/login']"
+                                        [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
+                        <p>Login</p>
+                    </a>
+                </li>
+
+                <li class="nav-item" *ngIf="isLoggedIn()">
+                    <a class="nav-link" (click)="onLogoutClick()">
+                        <p>Logout</p>
+                    </a>
+                </li>
+                <li class="nav-item" *ngIf="isLoggedIn()">
+                    <a class="nav-link" [routerLink]="['/profile']">
+                        <p>Profile</p>
+                    </a>
+                </li>
             </ul>
 
         </div>

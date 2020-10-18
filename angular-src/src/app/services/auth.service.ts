@@ -2,20 +2,18 @@ import { Injectable } from '@angular/core';
 import { Http, Headers} from "@angular/http";
 import { map } from 'rxjs/operators';
 import {JwtHelperService} from '@auth0/angular-jwt';
+import {Vars} from "../../../.env";
+
+
 
 @Injectable()
 export class AuthService {
   authToken: any;
   user: any;
+  register_url: string = 'http://localhost:8080/qualichain/users/register';
+  login_url: string = 'http://localhost:8080/qualichain/users/login';
 
   constructor(private http:Http, public jwtHelper: JwtHelperService) { }
-
-  //Login
-  authUser(user) {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.http.post('users/login', user, {headers: headers}).pipe(map(res => res.json()));
-  }
 
   //Checks if user is logged in
     loggedIn() {
@@ -35,11 +33,10 @@ export class AuthService {
     return user;
   }
 
-  //TODO deprecated
-  getCurrentUserType() {
+  getCurrentUserRole() {
     this.user = this.loadUserProfile();
     if (this.user != null && this.user !== undefined) {
-      return this.user.type;
+      return this.user.roles;
     } else {
       return null;
     }
@@ -70,11 +67,4 @@ export class AuthService {
   retrieveTokenUser() {
     return localStorage.getItem('authToken');
   }
-
-  registerStudent(token) {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.http.post('student/register', { 'tokenq': token }, {headers: headers}).pipe(map(res => res.json()));
-  }
-
 }

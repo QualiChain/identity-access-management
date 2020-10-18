@@ -33,7 +33,6 @@ export class QualichainService {
       } else if (Vars.ENVIRONMENT === 'INTEGRATION')    {
           this.url = "https://qualichain.herokuapp.com/qualichain/validateCertificate";
       }
-
       headers.append('Content-Type', 'application/json');
     //optional
     //this.authService.loadTokenUser(headers);
