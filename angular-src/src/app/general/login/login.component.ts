@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
         formData.append('username', this.username);
         formData.append('password', this.password);
 
-        this.IamService.authUser(formData).subscribe( response => {
+        this.authService.authUser(formData).subscribe( response => {
 
         if (response.succeeded) {
             this.authService.storeData(response.response_data.user, response.response_data.token);

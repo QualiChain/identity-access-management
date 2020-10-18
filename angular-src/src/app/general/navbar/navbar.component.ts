@@ -85,24 +85,10 @@ export class NavbarComponent implements OnInit {
       return titlee === '/articles';
     }
 
-    isThesis() {
-      const titlee = this.location.prepareExternalUrl(this.location.path());
-      return titlee === '/thesis';
-    }
-
-    isChatbot() {
-      const titlee = this.location.prepareExternalUrl(this.location.path());
-      return titlee === '/chatbot';
-    }
 
     isProfile() {
       const titlee = this.location.prepareExternalUrl(this.location.path());
       return titlee === '/profileStudent';
-    }
-
-    //TODO deprecated
-    isLoggedInStudent() {
-        return this.authService.loggedIn() && this.authService.getCurrentUserType() === 'Student';
     }
 
     isLoggedIn() {
