@@ -38,6 +38,30 @@ In order to run the project the required libraries need to be installed.
 
 [mlab]: https://docs.mlab.com/
 
+## QualiChain Identity and Access Management Module
+
+Users are identified by a JWT token. When a request is made to the backend, that token is loaded at authService.ts.
+Authorization is performed by parsing the JWT token and deriving the users' role (simple role-based access control)
+
+Example of the response from the IAM server after the recruiter logins:
+{
+    "response_data": {
+        "success": true,
+        "token": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZW1haW5pbmdfYXR0ZW1wdHMiOjMsInJvbGVzIjpbInJlY3J1aXRlciJdLCJ2YWxpZGF0aW9uIjoiY29uZmlybWVkIiwiZGVzY3JpcHRpb24iOlsiUXVhbGljaGFpbiBDZXJ0aWZpZWQgUmVjcnVpdGVyICJdLCJjb250YWN0IjpbImdlbmVyYWxAcXVhbGljaGFpbi5jb20iXSwiX190IjoicmVjcnVpdGVyIiwiX2lkIjoiNWY4YjMxZTBjZmUwZDIyZjI3MzIzM2EzIiwibmFtZSI6IlJlY3J1aXRlciBCb2IiLCJlbWFpbCI6ImJvYkBxdWFsaWNoYWluLmNvbSIsInBhc3N3b3JkIjoiJDJiJDE0JFkxbjBZbHd2SzFXb2xoY0ZKOW9EdWVNc2FjSVc5cTk2b3dJMm50ZUJaOENlMzFyM1Nob0cyIiwibG9jYXRpb24iOiJFdXJvcGUiLCJfX3YiOjAsImlhdCI6MTYwMjk3ODYyMSwiZXhwIjoxNjAyOTg5NDIxfQ.-U4968r074oEwlhwTzvn4HgGLnndHWSiqhyc7W32JJ8",
+        "user": {
+            "id": "5f8b31e0cfe0d22f273233a3",
+            "name": "Recruiter Bob",
+            "email": "bob@qualichain.com",
+            "roles": [
+                "recruiter"
+            ]
+        }
+    },
+    "succeeded": true,
+    "message": "Logged in"
+}
+
+
 ## On QualiChain Recruiting
 
 This is the module executed by a recruiting organization, e.g., a public administration organization like AMA or a company. This component is responsible for the diploma validation. It receives a PDF file representing a diploma as an input. 
