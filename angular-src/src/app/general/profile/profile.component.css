@@ -1,0 +1,53 @@
+.middlePage {
+  width: 70%;
+  height: auto;
+  margin-top: 5em;
+  margin-bottom: 5em;
+}
+
+.fix {
+  table-layout: fixed;
+
+}
+
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.panel-info > .panel-heading {
+  background-color: #30a5ff;
+  color: #fff;
+  font-size:2em;
+  border: none; }
+
+.panel-primary > .panel-heading {
+  color: #fff;
+  font-size:2em;
+  border: none; }
+
+.panel-warning> .panel-heading {
+  background-color: #EFB920;
+  color: #fff;
+  font-size:2em;
+  border: none; }
+
+.panel-danger> .panel-heading {
+  color: #fff;
+  font-size:2em;
+  border: none; }
+
+.centered {
+  text-align: center;
+}
+
+.token {
+  display: table;
+  table-layout: fixed;
+  word-wrap: break-word;
+  white-space: pre;
+}
