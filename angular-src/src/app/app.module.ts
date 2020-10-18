@@ -22,7 +22,6 @@ import { RecruitingComponent } from './qualichain/recruiting/recruiting.componen
 import { RegisterComponent} from './general/register/register.component';
 import { CompanyRegisterComponent } from './general/register/company-register/company-register.component';
 import { LoginComponent } from './general/login/login.component';
-import { LoginStudentComponent } from './general/login/login-student/login-student.component';
 import { ProfileComponent } from './general/profile/profile.component';
 
 
@@ -37,7 +36,6 @@ const appRoutes: Routes = [
 
     {path: 'login', children: [
             {path: '', component: LoginComponent},
-            {path: 'student', component: LoginStudentComponent},
         ]},
 
     {path: 'privacy-policy', component: PrivacyPolicyComponent},
@@ -52,7 +50,6 @@ const appRoutes: Routes = [
         CompanyRegisterComponent,
         NavbarComponent,
         LoginComponent,
-        LoginStudentComponent,
         HomeComponent,
         FooterComponent,
         PrivacyPolicyComponent,
