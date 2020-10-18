@@ -51,6 +51,24 @@ export class AuthService {
     }
   }
 
+
+  authUser(formData) {
+
+    const headers = new Headers();
+    if (Vars.ENVIRONMENT === 'PRODUCTION')    {
+      this.login_url = "users/login";
+    } else if (Vars.ENVIRONMENT === 'INTEGRATION')    {
+      this.login_url = "https://qualichain.herokuapp.com/users/login";
+    } else if (Vars.ENVIRONMENT === 'TEST')    {
+      this.login_url = "http://localhost:8080/users/login";
+    }
+
+    headers.append('Content-Type', 'application/json');
+    // @ts-ignore
+    return this.http.post(this.login_url, formData, { observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));
+  }
+
+
   storeData(user, token) {
     localStorage.setItem('authToken', token);
     localStorage.setItem('user', JSON.stringify(user));
