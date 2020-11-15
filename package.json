@@ -65,6 +65,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "stopword": "^0.1.10",
+    "unirest": "^0.6.0",
     "web3": "^1.2.11",
     "winston": "^2.4.2",
     "winston-daily-rotate-file": "^1.7.2"

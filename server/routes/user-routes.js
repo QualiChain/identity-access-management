@@ -8,6 +8,9 @@ const UtilsRoutes = require('../routes/utils-routes');
 const Iam = require('../routes/iam');
 const ba_logger = require('../log/ba_logger');
 const passport = require('passport');
+const NtuaAPI = require('../ntua-api/ntua');
+require('dotenv').load();
+const DB_SECRET = process.env.DB_SECRET;
 
 const USER_NOT_FOUND = "User not found.";
 const WRONG_PASSWORD_PART_1 = "Wrong password. You have ";
@@ -67,6 +70,10 @@ router.post('/login', (req, res) => {
     const email = req.fields.username;
     const password = req.fields.password;
 
+    if (!email || !password)    {
+        return UtilsRoutes.replyFailure(res,"","Insert username/password");
+    }
+
     DBAccess.users.getUserByEmail(email,async (err, user) => {
         if (err) {
             throw err;
@@ -86,8 +93,27 @@ router.post('/login', (req, res) => {
                 return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1 + user.remaining_attempts + WRONG_PASSWORD_PART_2);
             }   else    {
 
-                console.log("New Login, token content: \n", user._doc);
-                const token = jwt.sign(user._doc, dbConfig.DB_SECRET, {
+               let tokenInfo = user._doc
+
+                console.log("Logging in with email: ", email);
+                NtuaAPI.person.getPerson(email, (response, error) =>  {
+                    if (error)  {
+                        ba_logger.ba("Failed request to NTUA")
+                        throw new Error(error);
+                    }   else    {
+                        ba_logger.ba("Successful request to NTUA")
+                        var parsedResponse = JSON.parse(response);
+                        console.log(parsedResponse);
+
+                        if (parsedResponse.id)    {
+                            tokenInfo['id'] = parsedResponse.id;
+                        }
+                    }
+
+                console.log("New Login, original token content: \n", user._doc);
+                console.log("New Login, NTUA content: \n", parsedResponse.id);
+                console.log("New Login, token content: \n", tokenInfo);
+                const token = jwt.sign(tokenInfo, DB_SECRET, {
                     expiresIn: 10800
                 });
 
@@ -96,6 +122,7 @@ router.post('/login', (req, res) => {
                     token: 'bearer ' + token,
                     user: {
                         id: user.id,
+                        qualichainId: tokenInfo["id"],
                         name: user.name,
                         email: user.email,
                         roles: user.roles,
@@ -106,9 +133,29 @@ router.post('/login', (req, res) => {
                 //logger.warn("Login: "+ data.user.type + "," + data.user.name + ", logged in at " + Utils.utc);
                 ba_logger.ba("Login:" + data.user.id + ":" + data.user.email);
                 UtilsRoutes.replySuccess(res, data, "Logged in");
+                });
             }
         }
     });
+});
+
+router.post('/testNTUA', async (req, res) =>     {
+    if(!Iam.isAdministrator(req))    {
+        UtilsRoutes.replyFailure(res,"Only recruiters can access this route",'');
+        return;
+    }
+    const email = req.fields.email;
+    console.log(email)
+    NtuaAPI.person.getPerson(email, (response, error) =>  {
+        if (error)  {
+            ba_logger.ba("Failed request to NTUA")
+            throw new Error(error);
+        }   else    {
+            ba_logger.ba("Successful request to NTUA")
+             UtilsRoutes.replySuccess(res,JSON.parse(response),"");
+        }
+    });
+
 });
 
 
