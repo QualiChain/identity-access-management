@@ -106,7 +106,9 @@ router.post('/login', (req, res) => {
                         console.log(parsedResponse);
 
                         if (parsedResponse.id)    {
-                            tokenInfo['id'] = parsedResponse.id;
+                            tokenInfo['NTUA_id'] = parsedResponse.id;
+                            tokenInfo['NTUA_fullName'] = parsedResponse.fullName;
+                            tokenInfo['NTUA_email'] = parsedResponse.email;
                         }
                     }
 
@@ -117,29 +119,31 @@ router.post('/login', (req, res) => {
                     expiresIn: 10800
                 });
 
-                let data =    {
+                let identityToken =    {
                     success: true,
                     token: 'bearer ' + token,
                     user: {
-                        id: user.id,
-                        qualichainId: tokenInfo["id"],
-                        name: user.name,
-                        email: user.email,
+                        id_MOCK: user.id,
+                        userId: tokenInfo["NTUA_id"],
+                        fullName: tokenInfo["NTUA_fullName"],
+                        email: tokenInfo["NTUA_email"],
+                        name_MOCK: user.name,
+                        email_MOCK: user.email,
                         roles: user.roles,
                     },
                 };
 
 
                 //logger.warn("Login: "+ data.user.type + "," + data.user.name + ", logged in at " + Utils.utc);
-                ba_logger.ba("Login:" + data.user.id + ":" + data.user.email);
-                UtilsRoutes.replySuccess(res, data, "Logged in");
+                ba_logger.ba("Login:" + identityToken.user.id + ":" + identityToken.user.email);
+                UtilsRoutes.replySuccess(res, identityToken, "Logged in");
                 });
             }
         }
     });
 });
 
-router.post('/testNTUA', async (req, res) =>     {
+router.post('/testNTUA', passport.authenticate('jwt', {session: false}), async (req, res) =>     {
     if(!Iam.isAdministrator(req))    {
         UtilsRoutes.replyFailure(res,"Only recruiters can access this route",'');
         return;
@@ -211,6 +215,23 @@ router.post('/iAmAcademic', passport.authenticate('jwt', {session: false}), asyn
     }
     try {
         UtilsRoutes.replySuccess(res, '', "Your role is student and/or professor");
+
+    } catch (e) {
+        ba_logger.ba("BA||ERROR|");
+        UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
+        throw new Error(e);
+    }
+});
+
+router.post('/validateToken', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    try {
+        const userInfo = {
+            id_MOCK: req.user.id_MOCK,
+            id: req.user.userId,
+            username: req.user.name_MOCK,
+            roles: req.user.roles
+        }
+        UtilsRoutes.replySuccess(res, userInfo, "Token Validated");
 
     } catch (e) {
         ba_logger.ba("BA||ERROR|");
