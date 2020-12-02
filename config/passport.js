@@ -9,7 +9,6 @@ module.exports = exports = function passportUser (passport){
         let opts = {};
         opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
         opts.secretOrKey = dbConfig.DB_SECRET;
-        opts.issuer = "IAM-";
         passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
             DBAccess.users.getUserById(jwt_payload._id, (err, user) => {
                 if (err) return done(err, false);
