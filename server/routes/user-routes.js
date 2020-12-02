@@ -73,7 +73,7 @@ router.post('/login', (req, res) => {
     if (!email || !password)    {
         return UtilsRoutes.replyFailure(res,"","Insert username/password");
     }
-
+    console.log("Logging in with email: ", email);
     DBAccess.users.getUserByEmail(email,async (err, user) => {
         if (err) {
             throw err;
@@ -93,9 +93,18 @@ router.post('/login', (req, res) => {
                 return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1 + user.remaining_attempts + WRONG_PASSWORD_PART_2);
             }   else    {
 
-               let tokenInfo = user._doc
+               let userInfo = user._doc;
+               let tokenInfo = {};
+               //_id Needs to exist for database queries
+                tokenInfo["_id"] = userInfo._id;
+                //Id can be replaced by NTUA's ID
+                tokenInfo["id"] = userInfo._id;
+                tokenInfo["name"] = userInfo.name;
+                tokenInfo["email"] = userInfo.email;
+                tokenInfo["remaining_attempts"] = userInfo.remaining_attempts;
+                tokenInfo["roles"] = userInfo.roles;
 
-                console.log("Logging in with email: ", email);
+                console.log("New Login, original token content: \n", tokenInfo);
                 NtuaAPI.person.getPerson(email, (response, error) =>  {
                     if (error)  {
                         ba_logger.ba("Failed request to NTUA")
@@ -106,30 +115,25 @@ router.post('/login', (req, res) => {
                         console.log(parsedResponse);
 
                         if (parsedResponse.id)    {
-                            tokenInfo['NTUA_id'] = parsedResponse.id;
-                            tokenInfo['NTUA_fullName'] = parsedResponse.fullName;
-                            tokenInfo['NTUA_email'] = parsedResponse.email;
+                            tokenInfo['id'] = parsedResponse.id;
+                            tokenInfo['name'] = parsedResponse.fullName;
+                            tokenInfo['userPath'] = parsedResponse.userPath;
+                            //tokenInfo['email'] = parsedResponse.email;
                         }
                     }
 
-                console.log("New Login, original token content: \n", user._doc);
-                console.log("New Login, NTUA content: \n", parsedResponse.id);
                 console.log("New Login, token content: \n", tokenInfo);
                 const token = jwt.sign(tokenInfo, DB_SECRET, {
                     expiresIn: 10800
                 });
 
                 let identityToken =    {
-                    success: true,
                     token: 'bearer ' + token,
                     user: {
-                        id_MOCK: user.id,
-                        userId: tokenInfo["NTUA_id"],
-                        fullName: tokenInfo["NTUA_fullName"],
-                        email: tokenInfo["NTUA_email"],
-                        name_MOCK: user.name,
-                        email_MOCK: user.email,
-                        roles: user.roles,
+                        id: tokenInfo["id"],
+                        email: tokenInfo["email"],
+                        name: tokenInfo["name"],
+                        roles: tokenInfo["roles"],
                     },
                 };
 
@@ -224,13 +228,27 @@ router.post('/iAmAcademic', passport.authenticate('jwt', {session: false}), asyn
 });
 
 router.post('/validateToken', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    let id;
+    let name;
+    let email;
+
+    if (req.user.id)   {
+        id = req.user.id;
+    }
+    if (req.user.name)   {
+        name = req.user.name;
+    }
+    if (req.user.email) {
+        email = req.user.email;
+    }
     try {
         const userInfo = {
-            id_MOCK: req.user.id_MOCK,
-            id: req.user.userId,
-            username: req.user.name_MOCK,
+            id: id,
+            name: name,
+            email: email,
             roles: req.user.roles
         }
+        console.log(req);
         UtilsRoutes.replySuccess(res, userInfo, "Token Validated");
 
     } catch (e) {

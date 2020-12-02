@@ -60,6 +60,10 @@ export class NavbarComponent implements OnInit {
       if (user == null)   {
         return;
     }
+
+    if (!user.name) {
+      return;
+    }
     let endOfFirstName = user.name.indexOf(" ");
     let firstName = user.name.slice(0,endOfFirstName);
     this.name = firstName;
