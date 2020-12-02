@@ -93,9 +93,9 @@ router.post('/login', (req, res) => {
                 return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1 + user.remaining_attempts + WRONG_PASSWORD_PART_2);
             }   else    {
 
-               let userInfo = user._doc;
-               let tokenInfo = {};
-               //_id Needs to exist for database queries
+                let userInfo = user._doc;
+                let tokenInfo = {};
+                //_id Needs to exist for database queries
                 tokenInfo["_id"] = userInfo._id;
                 //Id can be replaced by NTUA's ID
                 tokenInfo["id"] = userInfo._id;
@@ -122,25 +122,25 @@ router.post('/login', (req, res) => {
                         }
                     }
 
-                console.log("New Login, token content: \n", tokenInfo);
-                const token = jwt.sign(tokenInfo, DB_SECRET, {
-                    expiresIn: 10800
-                });
+                    console.log("New Login, token content: \n", tokenInfo);
+                    const token = jwt.sign(tokenInfo, DB_SECRET, {
+                        expiresIn: 10800
+                    });
 
-                let identityToken =    {
-                    token: 'bearer ' + token,
-                    user: {
-                        id: tokenInfo["id"],
-                        email: tokenInfo["email"],
-                        name: tokenInfo["name"],
-                        roles: tokenInfo["roles"],
-                    },
-                };
+                    let identityToken =    {
+                        token: 'bearer ' + token,
+                        user: {
+                            id: tokenInfo["id"],
+                            email: tokenInfo["email"],
+                            name: tokenInfo["name"],
+                            roles: tokenInfo["roles"],
+                        },
+                    };
 
 
-                //logger.warn("Login: "+ data.user.type + "," + data.user.name + ", logged in at " + Utils.utc);
-                ba_logger.ba("Login:" + identityToken.user.id + ":" + identityToken.user.email);
-                UtilsRoutes.replySuccess(res, identityToken, "Logged in");
+                    //logger.warn("Login: "+ data.user.type + "," + data.user.name + ", logged in at " + Utils.utc);
+                    ba_logger.ba("Login:" + identityToken.user.id + ":" + identityToken.user.email);
+                    UtilsRoutes.replySuccess(res, identityToken, "Logged in");
                 });
             }
         }
@@ -160,7 +160,7 @@ router.post('/testNTUA', passport.authenticate('jwt', {session: false}), async (
             throw new Error(error);
         }   else    {
             ba_logger.ba("Successful request to NTUA")
-             UtilsRoutes.replySuccess(res,JSON.parse(response),"");
+            UtilsRoutes.replySuccess(res,JSON.parse(response),"");
         }
     });
 
@@ -219,37 +219,6 @@ router.post('/iAmAcademic', passport.authenticate('jwt', {session: false}), asyn
     }
     try {
         UtilsRoutes.replySuccess(res, '', "Your role is student and/or professor");
-
-    } catch (e) {
-        ba_logger.ba("BA||ERROR|");
-        UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
-        throw new Error(e);
-    }
-});
-
-router.post('/validateToken', passport.authenticate('jwt', {session: false}), async (req, res) => {
-    let id;
-    let name;
-    let email;
-
-    if (req.user.id)   {
-        id = req.user.id;
-    }
-    if (req.user.name)   {
-        name = req.user.name;
-    }
-    if (req.user.email) {
-        email = req.user.email;
-    }
-    try {
-        const userInfo = {
-            id: id,
-            name: name,
-            email: email,
-            roles: req.user.roles
-        }
-        console.log(req);
-        UtilsRoutes.replySuccess(res, userInfo, "Token Validated");
 
     } catch (e) {
         ba_logger.ba("BA||ERROR|");
