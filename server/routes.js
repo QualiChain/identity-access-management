@@ -1,10 +1,12 @@
 const path = require('path');
 const qualichainRoutes = require('./routes/qualichain-routes');
 const userRoutes = require('./routes/user-routes');
+const authRoutes = require('./routes/auth-routes');
 
 module.exports = (app) => {
     app.use('/qualichain', qualichainRoutes);
     app.use('/users', userRoutes);
+    app.use('/auth', authRoutes);
 
     /***********************************************************************************************
      * MAIN
