@@ -17,8 +17,8 @@ let iam = module.exports = exports = new Iam;
 let validAPIKeys = [];
 validAPIKeys.push(process.env.NTUA_API_KEY_INCOMING);
 validAPIKeys.push(process.env.NTUA_API_KEY_INCOMING_LOCAL);
-console.log("validAPIKeys");
-console.log(validAPIKeys);
+validAPIKeys.push(process.env.SEAL_API_KEY_INCOMING_LOCAL);
+validAPIKeys.push(process.env.SEAL_API_KEY_INCOMING);
 
 // roleIs is meant to be called before the DB queries.
 // It provides an extra layer of security and resources saving
