@@ -4,8 +4,6 @@ import { map } from 'rxjs/operators';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {Vars} from "../../../.env";
 
-
-
 @Injectable()
 export class AuthService {
   authToken: any;
@@ -13,7 +11,8 @@ export class AuthService {
   register_url: string = 'http://localhost:8080/qualichain/users/register';
   login_url: string = 'http://localhost:8080/qualichain/users/login';
 
-  constructor(private http:Http, public jwtHelper: JwtHelperService) { }
+
+constructor(private http:Http, public jwtHelper: JwtHelperService) { }
 
   //Checks if user is logged in
     loggedIn() {
@@ -85,4 +84,21 @@ export class AuthService {
   retrieveTokenUser() {
     return localStorage.getItem('authToken');
   }
+
+
+  loginSeal(token) {
+    let url: string;
+    if (Vars.ENVIRONMENT === 'PRODUCTION')    {
+      url = "auth/login/seal";
+    } else if (Vars.ENVIRONMENT === 'INTEGRATION')    {
+      url = "https://qualichain.herokuapp.com/auth/login/seal";
+    } else if (Vars.ENVIRONMENT === 'TEST')    {
+      url = "http://localhost:8080/auth/login/seal";
+    }
+    const formData: FormData = new FormData();
+    formData.append('tokenq', token);    const headers = new Headers();
+    // @ts-ignore
+    return this.http.post(url, formData, { headers: headers, observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));
+  }
+
 }

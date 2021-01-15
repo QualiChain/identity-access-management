@@ -23,6 +23,8 @@ import { RegisterComponent} from './general/register/register.component';
 import { CompanyRegisterComponent } from './general/register/company-register/company-register.component';
 import { LoginComponent } from './general/login/login.component';
 import { ProfileComponent } from './general/profile/profile.component';
+import { LoginStudentComponent } from './general/login/login-student/login-student.component';
+import { LoginSealComponent } from './general/login/login-seal/login-seal.component';
 
 
 const appRoutes: Routes = [
@@ -36,6 +38,7 @@ const appRoutes: Routes = [
 
     {path: 'login', children: [
             {path: '', component: LoginComponent},
+            {path: 'callback/seal', component: LoginSealComponent}
         ]},
 
     {path: 'privacy-policy', component: PrivacyPolicyComponent},
@@ -53,7 +56,9 @@ const appRoutes: Routes = [
         HomeComponent,
         FooterComponent,
         PrivacyPolicyComponent,
-        RecruitingComponent
+        RecruitingComponent,
+        LoginStudentComponent,
+        LoginSealComponent
 
     ],
     imports: [
@@ -66,7 +71,8 @@ const appRoutes: Routes = [
         JwtModule.forRoot({
             config: {
                 whitelistedDomains: ['localhost:3001', 'localhost:8080', 'qualichain.herokuapp.com',
-                                     'fenix.tecnico.ulisboa.pt/oauth, maps.googleapis.com']
+                                     'fenix.tecnico.ulisboa.pt/oauth', 'maps.googleapis.com',
+                                    'dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth']
             }
         }),
         RouterModule.forRoot(appRoutes),

@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { Router, ActivatedRoute, Params} from "@angular/router";
 import {FlashMessagesService} from "angular2-flash-messages";
 import {ValidateService} from "../../services/validate.service";
-//import { secrets } from '../../../.env';
 import {IamService} from '../../services/iam.service';
+import { Vars } from '../../../../.env'
 
 @Component({
   selector: 'app-login',
@@ -12,25 +12,50 @@ import {IamService} from '../../services/iam.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+    @ViewChild('loginStudent') myId: ElementRef;
+    @ViewChild('loginStudent2') myId2: ElementRef;
+    @ViewChild('loginStudent3') myId3: ElementRef;
+
     username: string;
     password: string;
     studentPath: string;
     professorPath: string;
+    sealPath: string;
+    redirectUri: string;
+
     caller: string;
+    toggled1: boolean;
+    toggled2: boolean;
+    toggled3: boolean;
 
     constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute,
                 private flashMessage: FlashMessagesService, private validateService: ValidateService,
                 private IamService: IamService
     ) {
+        const clientId = Vars.SEAL_CLIENT_ID;
 
-        const clientId = "secrets.FENIX_CLIENT_ID";
-        const redirectUri = "secrets.REDIRECT_URL";
-        const redirectUriProf = "secrets.REDIRECT_URL_PROF";
+        if (Vars.ENVIRONMENT === 'PRODUCTION')    {
+            this.redirectUri = Vars.SEAL_REDIRECT_URL;
+        }   else if (Vars.ENVIRONMENT === 'TEST')   {
+            this.redirectUri = Vars.SEAL_REDIRECT_URL_LOCAL;
+        }
+        console.log(this.redirectUri)
+        const responseType = 'code';
 
-        this.studentPath = 'https://fenix.tecnico.ulisboa.pt/oauth/userdialog?' +
-            'client_id=' + clientId + '&redirect_uri=' + redirectUri;
+        //SEAL-EIDAS-EDUGAIN, SEAL-EIDAS, SEAL-EIDAS-EDUGAIN
+        //https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
+        //https://ldapwiki.com/wiki/Openid-configuration
 
-        this.professorPath = redirectUriProf;
+        //SEAL-EDUGAIN, SEAL-EIDAS,SEAL-EIDAS-EDUGAIN
+        const scopes = 'SEAL-EDUGAIN';
+
+        this.sealPath = 'https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth?' +
+            'client_id=' + clientId + '&redirect_uri=' +
+            this.redirectUri + '&response_type=' + responseType +
+            '&scope=' + scopes;
+
+        console.log("SEAL Path: " + this.sealPath);
+
     }
 
     ngOnInit() {
@@ -40,7 +65,6 @@ export class LoginComponent implements OnInit {
     onLoginSubmit(form) {
         this.username = form.value.username;
         this.password = form.value.password;
-
 
         if (!this.validateService.validateLogin(this.username)) {
             this.flashMessage.show('Please insert the username', {
@@ -54,6 +78,7 @@ export class LoginComponent implements OnInit {
             this.flashMessage.show('Please insert the password', {cssClass: 'alert-danger', timeout: 1000});
             return false;
         }
+
         const formData: FormData = new FormData();
         formData.append('username', this.username);
         formData.append('password', this.password);
@@ -88,4 +113,30 @@ export class LoginComponent implements OnInit {
       });
     }
 
+    toggleAuth() {
+        this.toggled1 = !this.toggled1;
+        if (this.toggled1) {
+            this.myId.nativeElement.attributes.class.nodeValue = "btn btn-primary btn-lg";
+        } else {
+            this.myId.nativeElement.attributes.class.nodeValue = "disabled btn btn-primary btn-lg";
+        }
+    }
+
+    toggleAuth2() {
+        this.toggled2 = !this.toggled2;
+        if (this.toggled2) {
+            this.myId2.nativeElement.attributes.class.nodeValue = "btn btn-primary btn-lg";
+        } else {
+            this.myId2.nativeElement.attributes.class.nodeValue = "disabled btn btn-primary btn-lg";
+        }
+    }
+
+    toggleAuth3() {
+        this.toggled3 = !this.toggled3;
+        if (this.toggled3) {
+            this.myId3.nativeElement.attributes.class.nodeValue = "btn btn-primary btn-lg";
+        } else {
+            this.myId3.nativeElement.attributes.class.nodeValue = "disabled btn btn-primary btn-lg";
+        }
+    }
 }
