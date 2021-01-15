@@ -24,7 +24,10 @@ const envConfigFile = `
 export const Vars = {
   ENVIRONMENT: "${process.env.ENVIRONMENT}",
   REDIRECT_URL: "${process.env.REDIRECT_URL}",
-  GOOGLE_MAPS: "${process.env.GOOGLE_MAPS_KEY}"
+  GOOGLE_MAPS: "${process.env.GOOGLE_MAPS_KEY}",
+  SEAL_CLIENT_ID: "${process.env.SEAL_CLIENT_ID}",
+  SEAL_REDIRECT_URL_LOCAL: "${process.env.SEAL_REDIRECT_URL_LOCAL}",
+  SEAL_REDIRECT_URL: "${process.env.SEAL_REDIRECT_URL}"
 };
 `;
 
