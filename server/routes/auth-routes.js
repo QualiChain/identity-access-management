@@ -31,7 +31,6 @@ router.post('/validateToken', passport.authenticate('jwt', {session: false}), as
             email: email,
             roles: req.user.roles
         }
-        console.log(req);
         UtilsRoutes.replySuccess(res, userInfo, "Token Validated");
 
     } catch (e) {
