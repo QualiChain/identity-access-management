@@ -1,7 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 
-# Qualichain Recruiting webapp
+# Qualichain IAM & Recruiting webapp
 
 ![web][logo]
 
@@ -40,26 +40,199 @@ In order to run the project the required libraries need to be installed.
 
 ## QualiChain Identity and Access Management Module
 
-Users are identified by a JWT token. When a request is made to the backend, that token is loaded at authService.ts.
-Authorization is performed by parsing the JWT token and deriving the users' role (simple role-based access control)
+IAM integration instructions
 
-Example of the response from the IAM server after the recruiter logins:
+Currently, the IAM provides users the option to login, being integrated with NTUA’s and SEAL (in progress) APIs. It also allows verifying an JWT identity token. It has two main endpoints:
+-Login: http://qualichain.herokuapp.com/users/login
+-Validate JWT 	Token: https://qualichain.herokuapp.com/auth/validateToken
+
+
+Login
+
+The login endpoint receives user credentials (form/data; username + password), and returns a JWT token. As an example, by logging in with the following credentials:
+"username": bob@qualichain.com
+ "password": 123
+
+
+It returns a "response_data" field containing the token itself and the user data.
+For example:
+
+
+
 {
-    "response_data": {
-        "success": true,
-        "token": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZW1haW5pbmdfYXR0ZW1wdHMiOjMsInJvbGVzIjpbInJlY3J1aXRlciJdLCJ2YWxpZGF0aW9uIjoiY29uZmlybWVkIiwiZGVzY3JpcHRpb24iOlsiUXVhbGljaGFpbiBDZXJ0aWZpZWQgUmVjcnVpdGVyICJdLCJjb250YWN0IjpbImdlbmVyYWxAcXVhbGljaGFpbi5jb20iXSwiX190IjoicmVjcnVpdGVyIiwiX2lkIjoiNWY4YjMxZTBjZmUwZDIyZjI3MzIzM2EzIiwibmFtZSI6IlJlY3J1aXRlciBCb2IiLCJlbWFpbCI6ImJvYkBxdWFsaWNoYWluLmNvbSIsInBhc3N3b3JkIjoiJDJiJDE0JFkxbjBZbHd2SzFXb2xoY0ZKOW9EdWVNc2FjSVc5cTk2b3dJMm50ZUJaOENlMzFyM1Nob0cyIiwibG9jYXRpb24iOiJFdXJvcGUiLCJfX3YiOjAsImlhdCI6MTYwMjk3ODYyMSwiZXhwIjoxNjAyOTg5NDIxfQ.-U4968r074oEwlhwTzvn4HgGLnndHWSiqhyc7W32JJ8",
-        "user": {
-            "id": "5f8b31e0cfe0d22f273233a3",
-            "name": "Recruiter Bob",
-            "email": "bob@qualichain.com",
-            "roles": [
-                "recruiter"
-            ]
-        }
-    },
-    "succeeded": true,
-    "message": "Logged in"
+
+
+
+
+   "response_data": {
+
+
+       "token": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQxMDQzMjRlMDI1NGYwNGU1ZDcxZjciLCJpZCI6MSwibmFtZSI6InBhbmFnaW90aXMgcGFuYWdpb3RpcyIsImVtYWlsIjoiZXhhbXBsZTFAZ21haWwuY29tIiwicmVtYWluaW5nX2F0dGVtcHRzIjozLCJyb2xlcyI6WyJyZWNydWl0ZXIiXSwidXNlclBhdGgiOiIvaG9tZS9wYW5hZ2lvdGlzIiwiaWF0IjoxNjEwNDU1NjMwLCJleHAiOjE2MTA0NjY0MzB9.v0Mf2rDPgPgkUoT2E0K3PkB33bBrw19wdO4RelXiFR0",
+
+
+       "user": {
+
+
+           "id": 1,
+
+
+           "email": "example1@gmail.com",
+
+
+           "name": "panagiotis panagiotis",
+
+
+           "roles": [
+
+
+               "recruiter"
+
+
+           ]
+
+
+       }
+
+
+   },
+
+
+   "succeeded": true,
+
+
+   "message": "Logged in"
+
+
 }
+
+
+note the role field, which identifies this user as a “recruiter” and can be used for authorization purposes.
+
+
+
+Token Validation
+
+After receiving the token, it needs to be validated. Currently there are two methods to do this.
+
+Remote method
+
+The IAM provides a token validation endpoint that can be used for testing purposes. The endpoint is u can also use the endpoint. Note that it is hosted by the IAM API server:
+
+POST /users/validateToken HTTP/1.1
+Host: qualichain.herokuapp.com
+Content-Type: application/json
+Authorization: Bearer eyJhbG...
+
+I.e., make a POST with the authorization header set with the JWT token to https://qualichain.herokuapp.com/auth/validateToken
+
+Example of validation:
+curl --location --request POST 'https://qualichain.herokuapp.com/auth/validateToken' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjhiNTVhZDcyNWVmNDUzZmVjOGVlNWYiLCJpZCI6IjVmOGI1NWFkNzI1ZWY0NTNmZWM4ZWU1ZiIsIm5hbWUiOiJSYWZhZWwgQmVsY2hpb3IiLCJlbWFpbCI6InJhZmFlbC5iZWxjaGlvckB0ZWNuaWNvLnVsaXNib2EucHQiLCJyZW1haW5pbmdfYXR0ZW1wdHMiOjMsInJvbGVzIjpbInN0dWRlbnQiLCJwcm9mZXNzb3IiXSwiaWF0IjoxNjA3NDM4NjAxLCJleHAiOjE2MDc0NDk0MDF9.Az9RoBodxFHePN3qDwbbMD18OfoXYmK0OvWRwWSEhks' \
+--data-raw ''
+
+Example of response:
+{
+   "response_data": {
+       "id": "5f8b31e0cfe0d22f273233a3",
+       "name": "Recruiter Bob",
+       "email": "bob@qualichain.com",
+       "roles": [
+           "recruiter"
+       ]
+   },
+   "succeeded": true,
+   "message": "Token Validated"
+}
+
+
+
+Note that this should be used only for testing purposes and the next method is the preferred one, and validation is done locally.
+
+Local method (recommended)
+
+The JWT token can be validated using the Passport.js package [1]. Some validation examples can be found at
+https://github.com/QualiChain/consortium-web-app/blob/master/server/routes/user-routes.js#L171
+https://github.com/QualiChain/consortium-web-app/blob/master/server/routes/iam.js#L45
+
+
+This validation requires a secret. Currently, we are using  symmetric crypto.
+This will be updated to asymmetric cryptography soon.
+The secret is 7Yu$XnJZ5G2J$YZcGSJs9t
+
+
+
+[1] http://www.passportjs.org/docs/
+
+
+Generating Crypto Material:
+
+Generate Private key
+
+#### At the sslcert folder
+
+ssh-keygen -t rsa -b 4096 -m PEM -f qualichain.key
+### Don't add passphrase
+openssl rsa -in qualichain.key -pubout -outform PEM -out qualichain.key.pub
+
+#### Check keys
+cat qualichain.key
+cat qualichain.key.pub
+
+#### Convert keys to a format readable by dotenv package, by running the script under sslcert folder
+Node convert.js
+
+#### check results
+cat qualichain.key.convert
+cat qualichain.key.pub.convert
+
+
+#### Now, we need to add qualichain.key.convert and qualichain.key.pub.convert to the .env file, between double quotes (“)
+
+JWT_SECRET_SIGNING_KEY = [qualichain.key.pub.convert]
+JWT_SECRET_VERIFICATION_KEY = [qualichain.key.convert]
+
+#### Finally, add JWT_ALGORITHM as RS256 to .env
+JWT_ALGORITHM = RS256
+
+Emission on tokens is done using the private/signing key, at the login endpoint, user-routes
+
+Verification of JWT tokens is done with the verification/public key, (loading it at line 11 from passport.js)
+
+
+
+Mock Users:
+
+--
+Username: admin@qualichain.epu.ntua.gr
+Password: 123
+Roles: Administrator (can register Recruiters)
+--
+Username: recruiting@gmail.com
+Password: 123
+Roles: Recruiting organisation
+--
+Username: admin@tecnico.ulisboa.pt
+Password: 123
+Roles: academic organisation
+--
+Username: rafael.belchior@tecnico.ulisboa.pt
+Password: 123
+Roles: student and professor
+
+--
+Username: student@tecnico.ulisboa.pt
+Password: 123
+Roles: student
+--
+Username: professor@tecnico.ulisboa.pt
+Password: 123
+Roles: professor
+---
+Username: bob@qualichain.com
+Password: 123
+Roles: recruiter
+--
+
 
 
 ## On QualiChain Recruiting
