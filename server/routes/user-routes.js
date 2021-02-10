@@ -11,6 +11,10 @@ const passport = require('passport');
 const NtuaAPI = require('../ntua-api/ntua');
 require('dotenv').load();
 const DB_SECRET = process.env.DB_SECRET;
+const JWT_ALGORITHM = process.env.JWT_ALGORITHM;
+const JWT_LIFETIME = process.env.JWT_LIFETIME;
+//const JWT_SECRET_SIGNING_KEY = JSON.parse(`"${process.env.JWT_SECRET_SIGNING_KEY}"`)
+const JWT_SECRET_SIGNING_KEY = process.env.JWT_SECRET_SIGNING_KEY;
 
 const USER_NOT_FOUND = "User not found.";
 const WRONG_PASSWORD_PART_1 = "Wrong password. You have ";
@@ -94,17 +98,17 @@ router.post('/login', (req, res) => {
             }   else    {
 
                 let userInfo = user._doc;
-                let tokenInfo = {};
+                let payload = {};
                 //_id Needs to exist for database queries
-                tokenInfo["_id"] = userInfo._id;
+                payload["_id"] = userInfo._id;
                 //Id can be replaced by NTUA's ID
-                tokenInfo["id"] = userInfo._id;
-                tokenInfo["name"] = userInfo.name;
-                tokenInfo["email"] = userInfo.email;
-                tokenInfo["remaining_attempts"] = userInfo.remaining_attempts;
-                tokenInfo["roles"] = userInfo.roles;
+                payload["id"] = userInfo._id;
+                payload["name"] = userInfo.name;
+                payload["email"] = userInfo.email;
+                payload["remaining_attempts"] = userInfo.remaining_attempts;
+                payload["roles"] = userInfo.roles;
 
-                console.log("New Login, original token content: \n", tokenInfo);
+                console.log("New Login, original token content: \n", payload);
                 NtuaAPI.person.getPerson(email, (response, error) =>  {
                     if (error)  {
                         ba_logger.ba("Failed request to NTUA")
@@ -115,25 +119,28 @@ router.post('/login', (req, res) => {
                         console.log(parsedResponse);
 
                         if (parsedResponse.id)    {
-                            tokenInfo['id'] = parsedResponse.id;
-                            tokenInfo['name'] = parsedResponse.fullName;
-                            tokenInfo['userPath'] = parsedResponse.userPath;
-                            //tokenInfo['email'] = parsedResponse.email;
+                            payload['id'] = parsedResponse.id;
+                            payload['name'] = parsedResponse.fullName;
+                            payload['userPath'] = parsedResponse.userPath;
+                            //payload['email'] = parsedResponse.email;
                         }
                     }
 
-                    console.log("New Login, token content: \n", tokenInfo);
-                    const token = jwt.sign(tokenInfo, DB_SECRET, {
-                        expiresIn: 10800
+                    console.log("New Login, token content: \n", payload);
+
+                    const token = jwt.sign(payload, JWT_SECRET_SIGNING_KEY, {
+                        expiresIn: JWT_LIFETIME,
+                        algorithm: JWT_ALGORITHM,
+                        jwtid: Math.random().toString().split(".")[1]
                     });
 
                     let identityToken =    {
                         token: 'bearer ' + token,
                         user: {
-                            id: tokenInfo["id"],
-                            email: tokenInfo["email"],
-                            name: tokenInfo["name"],
-                            roles: tokenInfo["roles"],
+                            id: payload["id"],
+                            email: payload["email"],
+                            name: payload["name"],
+                            roles: payload["roles"],
                         },
                     };
 
