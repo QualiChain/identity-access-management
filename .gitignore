@@ -2,6 +2,11 @@
 docs/
 out/
 
+#Crypto materials
+sslcert/*
+!sslcert/convert.js
+
+
 #WebStorm config files
 angular-src/.editorconfig
 .editorconfig
@@ -15,9 +20,6 @@ backup/*
 #Sensitive info
 angular-src/.env.ts
 angular-src/.env.js
-sslcert/*
-!sslcert/cert-example.pem
-!sslcert/key-example.pem
 angular-src/public
 *.bat
 *.sh
