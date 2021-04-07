@@ -64,6 +64,7 @@
     "parse-rss": "^1.0.3",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
+    "pem-jwk": "^2.0.0",
     "stopword": "^0.1.10",
     "unirest": "^0.6.0",
     "web3": "^1.2.11",
@@ -72,6 +73,7 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "json-stable-stringify": "^1.0.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.14.12",
     "nyc": "^14.1.1",
