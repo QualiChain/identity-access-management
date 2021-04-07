@@ -8,7 +8,31 @@ const UtilsRoutes = require('../routes/utils-routes');
 const Iam = require('../routes/iam');
 const ba_logger = require('../log/ba_logger');
 const passport = require('passport');
-const SEALAPI = require('../seal-api/seal');
+const sealApi = require('../seal-api/seal');
+
+
+router.get('/oidc/.well-known/openid-configuration', async (req, res) => {
+    try {
+        let wellKnown = UtilsRoutes.getWellKnown();
+        UtilsRoutes.replyObject(res, wellKnown, "wellKnown");
+    }   catch (e) {
+            ba_logger.ba("BA||ERROR|");
+            UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
+            throw new Error(e);
+    }
+});
+
+router.get('/oidc/jwks', async (req, res) => {
+    try {
+        let JWKSString = JSON.stringify(UtilsRoutes.getJWKS());
+        UtilsRoutes.replyObject(res, JWKSString);
+    }   catch (e) {
+            ba_logger.ba("BA||ERROR|");
+            UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
+            throw new Error(e);
+    }
+});
+
 
 router.post('/validateToken', passport.authenticate('jwt', {session: false}), async (req, res) => {
     let id;
@@ -59,14 +83,34 @@ router.post('/validateAPIKey', /*passport.authenticate('jwt', {session: false}),
 });
 
 router.post('/login/seal', async (req, res) => {
-   ba_logger.ba("BA|AUTH|LOGIN_SEAL");
-    //const code = req.body.tokenq;
-    const code = req.fields.tokenq;
+    const code = req.fields.code;
+    switch (req.fields.scope) {
+        case 'openid,SEAL-EDUGAIN':
+            break;
+        case 'openid,SEAL-EIDAS':
+            break;
+        case 'openid,SEAL-EIDAS-EDUGAIN':
+            break;
+        default:
+            throw new Error(`scope not defined, ${req.fields.scope}`);
+    }
+    const scope = req.fields.scope;
     const ip = req.connection.remoteAddress;
-    console.log("code")
-    console.log(code)
-    const token = await SEALAPI.getAccessTokenSEAL(code);
-    UtilsRoutes.replySuccess(res,"","")
+    ba_logger.ba("BA|AUTH|LOGIN_SEAL|" + ip);
+    try {
+        let accessToken = await sealApi.getAccessTokenSEAL(code, scope);
+        console.log(accessToken);
+        //const token = await SEALAPI.getAccessTokenSEAL(code);
+        //inspect token
+        //https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/token/introspect
+
+        //user info
+        //https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/userinfo
+        UtilsRoutes.replySuccess(res,"",accessToken)
+    }   catch (e) {
+        UtilsRoutes.replyFailure(res,e,"Error retrieving access token");
+        console.log(e);
+    }
 });
 
 

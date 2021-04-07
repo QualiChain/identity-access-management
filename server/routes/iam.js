@@ -2,8 +2,9 @@
 let dotenv = require('dotenv');
 const path = require('path')
 dotenv.config({path: path.join(__dirname,'../../.env')});
+dotenv.load();
 
-dotenv.load();function Iam() {
+function Iam() {
     this.roleIs = roleIs;
     this.isStudent = isStudent;
     this.isProfessor = isProfessor;

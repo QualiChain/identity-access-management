@@ -1,7 +1,6 @@
 const DBAccess = require('./../mongodb/accesses/mongo-access');
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const dbConfig = require('../../config/db');
 const Utils = require('../mongodb/accesses/utils-accesses');
 const UtilsRoutes = require('../routes/utils-routes');
@@ -44,7 +43,7 @@ router.options("/*", function(req, res, next){
 //Registers a recruiter. Only users with the role "administrator" can do so.
 router.post('/register', passport.authenticate('jwt', {session: false}), function (req, res) {
     if(!Iam.isAdministrator(req))    {
-        UtilsRoutes.replyFailure(res,"Only recruiters can access this route",'');
+        UtilsRoutes.replyFailure(res,"Only administrators can access this route",'');
         return;
     }
     let name = req.fields.name;
@@ -109,7 +108,7 @@ router.post('/login', (req, res) => {
                 payload["roles"] = userInfo.roles;
 
                 console.log("New Login, original token content: \n", payload);
-                NtuaAPI.person.getPerson(email, (response, error) =>  {
+                NtuaAPI.person.getPerson(email, async (response, error) =>  {
                     if (error)  {
                         ba_logger.ba("Failed request to NTUA")
                         throw new Error(error);
@@ -126,24 +125,14 @@ router.post('/login', (req, res) => {
                         }
                     }
 
-                    console.log("New Login, token content: \n", payload);
 
-                    const token = jwt.sign(payload, JWT_SECRET_SIGNING_KEY, {
-                        expiresIn: JWT_LIFETIME,
-                        algorithm: JWT_ALGORITHM,
-                        jwtid: Math.random().toString().split(".")[1]
-                    });
 
-                    let identityToken =    {
-                        token: 'bearer ' + token,
-                        user: {
-                            id: payload["id"],
-                            email: payload["email"],
-                            name: payload["name"],
-                            roles: payload["roles"],
-                        },
-                    };
+                    console.log("New Login, payload content: \n", payload);
+                    payload = UtilsRoutes.createPayload(payload);
 
+                    console.log("New Login, payload content after Solid: \n", payload);
+                    const token = await UtilsRoutes.createBearerToken(payload);
+                    const identityToken = await UtilsRoutes.createIdentityToken(token, payload,false);
 
                     //logger.warn("Login: "+ data.user.type + "," + data.user.name + ", logged in at " + Utils.utc);
                     ba_logger.ba("Login:" + identityToken.user.id + ":" + identityToken.user.email);
