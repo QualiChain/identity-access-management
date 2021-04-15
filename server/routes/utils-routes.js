@@ -57,6 +57,7 @@ function replySuccess(res, data, message) {
 }
 
 function replyObject(res, obj) {
+    res.set('Content-Type', 'application/json');
     res.send(obj);
 }
 

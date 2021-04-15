@@ -8,7 +8,25 @@
         <div class="row">
 
           <div class="col-sm-10 mobile-pull centered">
+
             <article role="login">
+              <form [formGroup]="checkboxGroupForm">
+                <p>Select the role (1 or more):</p>
+
+                <div class="btn-group btn-group-toggle">
+                  <label class="btn-primary" ngbButtonLabel>
+                    <input type="checkbox" formControlName="student" ngbButton> Student
+                  </label>
+                  <label class="btn-primary" ngbButtonLabel>
+                    <input type="checkbox" formControlName="professor" ngbButton> Professor
+                  </label>
+                  <label class="btn-primary" ngbButtonLabel>
+                    <input type="checkbox" formControlName="recruiter" ngbButton> Recruiter
+                  </label>
+                </div>
+              </form>
+              <br>
+
               <form (submit)="register()" class="signup" action="index.html" method="post">
 
                 <div class="form-group">
@@ -24,10 +42,8 @@
                   <input [(ngModel)]="organization"  class="form-control" placeholder="Organization" name="organization">
                 </div>
 
-                <div class="form-group">
 
-                      <div class="col">
-
+                    <!--
                         <div ngbDropdown>
                           <button type="button" class="btn btn-outline-primary" id="dropdownConfig" ngbDropdownToggle>{{selectUserType}}</button>
                           <div ngbDropdownMenu aria-labelledby="dropdownConfig">
@@ -36,6 +52,7 @@
                         </div>
                       </div>
                   </div>
+                -->
                 <!--
                 <div class="form-group">
                   <input input [(ngModel)]="description" name="description" class="form-control" placeholder="Company Name">
