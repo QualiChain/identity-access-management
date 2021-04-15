@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const Utils = require('./utils-accesses');
-
+const bcrypt = require('bcrypt');
+const saltRounds = 14;
 // Abstract
 
 let TYPE = 'User';
@@ -11,6 +12,7 @@ class AccessUser {
         this.getUserByUsername = getUserByUsername;
         this.getUserByEmail = getUserByEmail;
         this.getUsers = getUsers;
+        this.addUser = addUser;
     }
 }
 
@@ -20,6 +22,26 @@ let access_user = module.exports = exports = new AccessUser();
 /********************************
  *  C.R.U.D. FUNCTIONS
  *******************************/
+
+function addUser(name, email, password, organization, role, callback) {
+    let newUser = new User({
+        name: name,
+        email: email,
+        password: null,
+        organization: organization,
+        roles: role
+    });
+
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+        bcrypt.hash(password, salt, function (err, hash) {
+            if (err) {
+                throw new Error(err);
+            }
+            newUser.password = hash;
+            newUser.save(callback);
+        });
+    });
+}
 
 function getUserById(id, callback) {
     User.findById(id)

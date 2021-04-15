@@ -28,14 +28,12 @@ let access_recruiter = module.exports = exports = new AccessRecruiter();
  *  C.R.U.D. FUNCTIONS
  *******************************/
 
-function addRecruiter(name, email, password, description, location, contact, callback) {
+function addRecruiter(name, email, password, organization, callback) {
     let newRecruiter = new Recruiter({
         name: name,
         email: email,
         password: null,
-        description: description,
-        location: location,
-        contact: contact
+        organization: organization,
     });
 
     bcrypt.genSalt(saltRounds, function (err, salt) {

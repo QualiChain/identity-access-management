@@ -32,6 +32,10 @@ const RecruiterSchema = mongoose.Schema({
         type: String,
         required: false
     },
+    organization: {
+        type: String,
+        required: false
+    },
     contact: {
         type: [String],
         required: false,

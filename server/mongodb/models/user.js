@@ -11,7 +11,20 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true,
         unique: true
-    }
+    },
+    organization: {
+        type: String,
+        required: false
+    },
+    password:  {
+        type: String,
+        required: true
+    },
+    roles:  {
+        type: [String],
+        default: "recruiter",
+        required: true
+    },
 });
 
 const User = module.exports = mongoose.model('User', UserSchema);

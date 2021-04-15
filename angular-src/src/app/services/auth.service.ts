@@ -86,7 +86,7 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
   }
 
 
-  loginSeal(token) {
+  loginSeal(code, scope) {
     let url: string;
     if (Vars.ENVIRONMENT === 'PRODUCTION')    {
       url = "auth/login/seal";
@@ -96,7 +96,9 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
       url = "http://localhost:8080/auth/login/seal";
     }
     const formData: FormData = new FormData();
-    formData.append('tokenq', token);    const headers = new Headers();
+    formData.append('code', code);
+    formData.append('scope', scope);
+    const headers = new Headers();
     // @ts-ignore
     return this.http.post(url, formData, { headers: headers, observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));
   }
