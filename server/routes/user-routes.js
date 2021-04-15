@@ -26,7 +26,7 @@ const NOT_COMP = "Not a company";
 const DUP_ENTRY = "user already exists";
 const ERROR = "An error concerning DB has occurred.";
 const COMPANY_UPDATED = "Company has been updated.";
-
+const ALLOWED_ROLES = ["student","professor","recruiter"];
 /*
 router.options("/*", function(req, res, next){
     res.header('Access-Control-Allow-Origin', '*');
@@ -52,59 +52,32 @@ router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ fun
     let email = req.fields.email;
     let password = req.fields.password;
     let organization = req.fields.organization;
-    let userType = req.fields.userType;
+    let userType = JSON.parse(req.fields.userType);
 
     if (userType === "undefined" || organization === "undefined" || password === "undefined" || email === "undefined" || name === "undefined")  {
         UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
     }
 
-    switch(userType)    {
-        case "professor":
-            DBAccess.users.addUser(name, email, password, organization, "professor", (err, addedCompany) =>     {
-                if (err)  {
-                    if (err.name === 'MongoError' && err.code === 11000)    {
-                        //Duplicated username or contact
-                        return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
-                    } else  {
-                        return UtilsRoutes.replyFailure(res,err,ERROR);
-                    }
-                }  else {
-                    ba_logger.ba("professor:"+ name + ":" + "registered");
-                    //return UtilsRoutes.replySuccess(res,addedCompany,COMP_ADDED);
-                }
-            });
-            break;
-        case "student":
-            DBAccess.users.addUser(name, email, password, organization, "student", (err, addedCompany) =>     {
-                if (err)  {
-                    if (err.name === 'MongoError' && err.code === 11000)    {
-                        //Duplicated username or contact
-                        return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
-                    } else  {
-                        return UtilsRoutes.replyFailure(res,err,ERROR);
-                    }
-                }  else {
-                    ba_logger.ba("student:"+ name + ":" + "registered");
-                }
-            });
-            break;
-        case "recruiter":
-            DBAccess.users.addUser(name, email, password, organization, "recruiter", (err, addedCompany) =>     {
-                if (err)  {
-                    if (err.name === 'MongoError' && err.code === 11000)    {
-                        //Duplicated username or contact
-                        return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
-                    } else  {
-                        return UtilsRoutes.replyFailure(res,err,ERROR);
-                    }
-                }  else {
-                    ba_logger.ba("recruiter:"+ name + ":" + "registered");
-                }
-            });
-            break;
-        default:
+    for (const candidateRole of userType)   {
+        if (!Utils.contains(ALLOWED_ROLES, candidateRole))   {
             UtilsRoutes.replyFailure(res,"ERROR: user type does not exist","ERROR: user type does not exist");
+            return;
+        }
     }
+
+    DBAccess.users.addUser(name, email, password, organization, userType, (err, addedCompany) =>     {
+        if (err)  {
+            if (err.name === 'MongoError' && err.code === 11000)    {
+                //Duplicated username or contact
+                return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
+            } else  {
+                return UtilsRoutes.replyFailure(res,err,ERROR);
+            }
+        }  else {
+            ba_logger.ba(userType + ":" + name + "registered");
+        }
+    });
+
     UtilsRoutes.replySuccess(res,"added user",COMP_ADDED);
 
 

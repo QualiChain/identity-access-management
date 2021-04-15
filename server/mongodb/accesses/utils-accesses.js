@@ -13,6 +13,7 @@ function Utils() {
     this.quickRemove = quickRemove;
     this.comparePassword = comparePassword;
     this.comparePasswordAsync = comparePasswordAsync;
+    this.contains = contains;
     this.utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
     this.time = new Date().toJSON().slice(0,16).replace(/-/g,'/') + "h";
 }
@@ -35,6 +36,9 @@ function quickSave(item, callback, type) {
         });
 }
 
+function contains(array, object)    {
+    return array.some(e => e === object)
+}
 /**
  * Removes a DB item, printing custom error messages if needed.
  * @param item
