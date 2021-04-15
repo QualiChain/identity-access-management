@@ -21,9 +21,9 @@ const WRONG_PASSWORD_PART_2 = " remaining attempts.";
 const WRONG_PASSWORD_INVALIDATE = "Your account has been blocked";
 const USER_INVALID = "";
 const USER_UNCONFIRMED = "Confirm your account";
-const COMP_ADDED = "Company added";
+const COMP_ADDED = "user added";
 const NOT_COMP = "Not a company";
-const DUP_ENTRY = "Company already exists";
+const DUP_ENTRY = "user already exists";
 const ERROR = "An error concerning DB has occurred.";
 const COMPANY_UPDATED = "Company has been updated.";
 
@@ -41,31 +41,73 @@ router.options("/*", function(req, res, next){
 });
 
 //Registers a recruiter. Only users with the role "administrator" can do so.
-router.post('/register', passport.authenticate('jwt', {session: false}), function (req, res) {
-    if(!Iam.isAdministrator(req))    {
+router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ function (req, res) {
+    /*if(!Iam.isAdministrator(req))    {
         UtilsRoutes.replyFailure(res,"Only administrators can access this route",'');
         return;
     }
+    */
+
     let name = req.fields.name;
     let email = req.fields.email;
     let password = req.fields.password;
-    let description = req.fields.description;
-    let location = req.fields.location;
-    let contact = req.fields.contact;
+    let organization = req.fields.organization;
+    let userType = req.fields.userType;
 
-    DBAccess.recruiter.addRecruiter(name, email, password, description,location,contact, (err, addedCompany) => {
-        if (err)  {
-            if (err.name === 'MongoError' && err.code === 11000)    {
-                //Duplicated username or contact
-                return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
-            } else  {
-                return UtilsRoutes.replyFailure(res,err,ERROR);
-            }
-        }  else {
-            ba_logger.ba("Recruiter:"+ name + ":" + "registered");
-            return UtilsRoutes.replySuccess(res,addedCompany,COMP_ADDED);
-        }
-    });
+    if (userType === "undefined" || organization === "undefined" || password === "undefined" || email === "undefined" || name === "undefined")  {
+        UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
+    }
+
+    switch(userType)    {
+        case "professor":
+            DBAccess.users.addUser(name, email, password, organization, "professor", (err, addedCompany) =>     {
+                if (err)  {
+                    if (err.name === 'MongoError' && err.code === 11000)    {
+                        //Duplicated username or contact
+                        return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
+                    } else  {
+                        return UtilsRoutes.replyFailure(res,err,ERROR);
+                    }
+                }  else {
+                    ba_logger.ba("professor:"+ name + ":" + "registered");
+                    //return UtilsRoutes.replySuccess(res,addedCompany,COMP_ADDED);
+                }
+            });
+            break;
+        case "student":
+            DBAccess.users.addUser(name, email, password, organization, "student", (err, addedCompany) =>     {
+                if (err)  {
+                    if (err.name === 'MongoError' && err.code === 11000)    {
+                        //Duplicated username or contact
+                        return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
+                    } else  {
+                        return UtilsRoutes.replyFailure(res,err,ERROR);
+                    }
+                }  else {
+                    ba_logger.ba("student:"+ name + ":" + "registered");
+                }
+            });
+            break;
+        case "recruiter":
+            DBAccess.users.addUser(name, email, password, organization, "recruiter", (err, addedCompany) =>     {
+                if (err)  {
+                    if (err.name === 'MongoError' && err.code === 11000)    {
+                        //Duplicated username or contact
+                        return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
+                    } else  {
+                        return UtilsRoutes.replyFailure(res,err,ERROR);
+                    }
+                }  else {
+                    ba_logger.ba("recruiter:"+ name + ":" + "registered");
+                }
+            });
+            break;
+        default:
+            UtilsRoutes.replyFailure(res,"ERROR: user type does not exist","ERROR: user type does not exist");
+    }
+    UtilsRoutes.replySuccess(res,"added user",COMP_ADDED);
+
+
 });
 
 //Logins a user and returns a jwt token
@@ -85,7 +127,7 @@ router.post('/login', (req, res) => {
             return UtilsRoutes.replyFailure(res, err, USER_NOT_FOUND);
         }
 
-        if(user.validation === "confirmed") {
+        //if(user.validation === "confirmed") {
             try {
                 var passwordsMatch = await Utils.comparePasswordAsync(password, user.password);
             }   catch (e)   {
@@ -93,7 +135,7 @@ router.post('/login', (req, res) => {
             }
 
             if (!passwordsMatch)    {
-                return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1 + user.remaining_attempts + WRONG_PASSWORD_PART_2);
+                return UtilsRoutes.replyFailure(res,err,WRONG_PASSWORD_PART_1);
             }   else    {
 
                 let userInfo = user._doc;
@@ -139,7 +181,7 @@ router.post('/login', (req, res) => {
                     UtilsRoutes.replySuccess(res, identityToken, "Logged in");
                 });
             }
-        }
+
     });
 });
 

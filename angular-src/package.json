@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "config": "ts-node ./scripts/set-env.ts",
-    "start": "npm run config && ng serve",
+    "start": "npm run config && ng serve --proxy-config proxy.config.json",
     "build": "npm run config && ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -30,7 +30,7 @@
     "@angular/platform-browser-dynamic": "6.1.7",
     "@angular/router": "6.1.7",
     "@auth0/angular-jwt": "^2.0.0",
-    "@ng-bootstrap/ng-bootstrap": "^4.1.0",
+    "@ng-bootstrap/ng-bootstrap": "^3.1.0",
     "@types/node": "^6.0.117",
     "adm-zip": "^0.4.11",
     "angular2-flash-messages": "^1.0.8",
