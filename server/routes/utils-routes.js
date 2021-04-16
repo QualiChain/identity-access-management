@@ -96,9 +96,9 @@ function createPayload (payload, isSEAL = false)  {
 
     //ID from NTUA exists
     if (payload['id'])   {
-        webid = "https://solid.qualichain-project.eu/webid/" + payload["id"] + "#me";
+        webid = "https://solid.qualichain-project.eu/webid/" + payload["id"];
     }  else {
-        webid = "https://solid.qualichain-project.eu/webid/" + payload["_id"] + "#me";
+        webid = "https://solid.qualichain-project.eu/webid/" + payload["_id"];
     }
     // WebID URL for user USERID
     payload["webid"] = webid;
