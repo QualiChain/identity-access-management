@@ -41,12 +41,7 @@ router.options("/*", function(req, res, next){
 });
 
 //Registers a recruiter. Only users with the role "administrator" can do so.
-router.post('/register', passport.authenticate('jwt', {session: false}), function (req, res) {
-    if(!Iam.isAdministrator(req))    {
-        UtilsRoutes.replyFailure(res,"Only administrators can access this route",'');
-        return;
-    }
-
+router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ function (req, res) {
     let name = req.fields.name;
     let email = req.fields.email;
     let password = req.fields.password;
