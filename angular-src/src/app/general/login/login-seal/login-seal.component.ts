@@ -15,8 +15,10 @@ export class LoginSealComponent implements OnInit {
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((params: Params) => {
-      const token = params['code'];
-      this.authService.loginSeal(token).subscribe( response => {
+      const code = params['session_state'];
+      const scope = params['state'];
+      this.authService.loginSeal(code, scope).subscribe( response => {
+        this.flashMessage.show(JSON.stringify(response), {cssClass: 'alert-warning', timeout: 5000});
         if (response.succeeded){
           console.log(response);
           this.authService.storeData(response.response_data.user, response.response_data.token);
