@@ -46,11 +46,17 @@ router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ fun
     let email = req.fields.email;
     let password = req.fields.password;
     let organization = req.fields.organization;
-    let userType = JSON.parse(req.fields.userType);
+    let userType = req.fields.userType;
 
-    if (userType === "undefined" || organization === "undefined" || password === "undefined" || email === "undefined" || name === "undefined")  {
+    if (userType === "" || organization === "" || password === "" || email === "" || name === "")  {
         UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
     }
+
+    if (userType === undefined || organization === undefined || password === undefined || email === undefined || name === undefined)  {
+        UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
+    }
+
+    userType = JSON.parse(userType);
 
     for (const candidateRole of userType)   {
         if (!Utils.contains(ALLOWED_ROLES, candidateRole))   {
@@ -108,13 +114,14 @@ router.post('/login', (req, res) => {
                 let userInfo = user._doc;
                 let payload = {};
                 //_id Needs to exist for database queries
-                payload["_id"] = userInfo._id;
+                payload["_id"] = userInfo._id.toString();
                 //Id can be replaced by NTUA's ID
-                payload["id"] = userInfo._id;
+                payload["id"] = userInfo._id.toString();
                 payload["name"] = userInfo.name;
                 payload["email"] = userInfo.email;
                 payload["remaining_attempts"] = userInfo.remaining_attempts;
                 payload["roles"] = userInfo.roles;
+                payload["organization"] = userInfo.organization;
 
                 console.log("New Login, original token content: \n", payload);
                 NtuaAPI.person.getPerson(email, async (response, error) =>  {
@@ -127,7 +134,7 @@ router.post('/login', (req, res) => {
                         console.log(parsedResponse);
 
                         if (parsedResponse.id)    {
-                            payload['id'] = parsedResponse.id;
+                            payload['id'] = JSON.stringify(parsedResponse.id);
                             payload['name'] = parsedResponse.fullName;
                             payload['userPath'] = parsedResponse.userPath;
                             //payload['email'] = parsedResponse.email;
