@@ -16,7 +16,7 @@ export class CompanyRegisterComponent implements OnInit {
 
   name: string = undefined;
   email: string = undefined;
-  organization: string = undefined;
+  organization: string = "";
   userType: string[] = [];
   left: string;
   right: string;
@@ -111,12 +111,10 @@ export class CompanyRegisterComponent implements OnInit {
 
       }
       else {
-        document.getElementById('responseBoxError').innerText = data.message;
+        //document.getElementById('responseBoxError').innerText = data.message;
+        this.flashMessage.show(data.message, {cssClass: 'alert-danger', timeout: 5000});
         console.log(data.error);
       }
-      }, error => {
-        document.getElementById('responseBoxError').innerText = error;
-        console.log(error);
       });
 
 

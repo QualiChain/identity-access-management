@@ -13,7 +13,7 @@ const UserSchema = mongoose.Schema({
         unique: true
     },
     organization: {
-        type: String,
+        type: [String],
         required: false
     },
     password:  {
