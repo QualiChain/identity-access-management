@@ -49,14 +49,22 @@ router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ fun
     let userType = req.fields.userType;
 
     if (userType === "" || organization === "" || password === "" || email === "" || name === "")  {
-        UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
+        return UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
     }
 
     if (userType === undefined || organization === undefined || password === undefined || email === undefined || name === undefined)  {
-        UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
+        return UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
     }
 
     userType = JSON.parse(userType);
+    organization = organization.split(',');
+
+    if (userType.length === 0)  {
+        return UtilsRoutes.replyFailure(res,"ERROR: Missing role. Please insert role","ERROR: Missing role. Please insert role");
+    }
+    if (organization.length === 0)  {
+        return UtilsRoutes.replyFailure(res,"ERROR: Missing organization. Please insert organization","ERROR: Missing organization. Please insert organization");
+    }
 
     for (const candidateRole of userType)   {
         if (!Utils.contains(ALLOWED_ROLES, candidateRole))   {
@@ -69,16 +77,16 @@ router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ fun
         if (err)  {
             if (err.name === 'MongoError' && err.code === 11000)    {
                 //Duplicated username or contact
-                return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
+                return UtilsRoutes.replyFailure(res,err,"The user with the email " + email + " already exists. Please provide another email");
             } else  {
                 return UtilsRoutes.replyFailure(res,err,ERROR);
             }
         }  else {
             ba_logger.ba(userType + ":" + name + "registered");
+            return UtilsRoutes.replySuccess(res,"added user",COMP_ADDED);
         }
     });
 
-    UtilsRoutes.replySuccess(res,"added user",COMP_ADDED);
 
 
 });
