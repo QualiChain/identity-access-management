@@ -55,8 +55,8 @@ router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ fun
     if (userType === undefined || organization === undefined || password === undefined || email === undefined || name === undefined)  {
         return UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
     }
-
-    userType = JSON.parse(userType);
+    userType = userType.split(',');
+    //userType = JSON.parse(userType);
     organization = organization.split(',');
 
     if (userType.length === 0)  {
@@ -132,10 +132,11 @@ router.post('/login', (req, res) => {
                 payload["organization"] = userInfo.organization;
 
                 console.log("New Login, original token content: \n", payload);
-                NtuaAPI.person.getPerson(email, async (response, error) =>  {
+                NtuaAPI.person.getPerson(payload.email, payload.name, payload.roles, payload.organization, async (response, error) =>  {
                     if (error)  {
-                        ba_logger.ba("Failed request to NTUA")
-                        throw new Error(error);
+                        ba_logger.ba("Failed request to NTUA");
+                        ba_logger.ba("Proceeding with login (id, name,userPath will be missing)");
+                        ba_logger.ba(error);
                     }   else    {
                         ba_logger.ba("Successful request to NTUA")
                         var parsedResponse = JSON.parse(response);

@@ -18,6 +18,7 @@ export class CompanyRegisterComponent implements OnInit {
   email: string = undefined;
   organization: string = "";
   userType: string[] = [];
+  userTypeString: string = "";
   left: string;
   right: string;
   middle: string;
@@ -78,19 +79,23 @@ export class CompanyRegisterComponent implements OnInit {
 
 
     this.userType = [];
+    this.userTypeString = "";
     let roles = this.checkboxGroupForm.value;
     for (const value in roles)  {
 
       if (roles[value])  {
         this.userType.push(value);
+        this.userTypeString += value + ',';
       }
     }
+    this.userTypeString = this.userTypeString.slice(0,this.userTypeString.length - 1);
+    console.log(this.userTypeString);
     const formData: FormData = new FormData();
     formData.append('name', this.name);
     formData.append('email', this.email);
     formData.append('password', this.password);
     formData.append('organization', this.organization);
-    formData.append('userType', JSON.stringify(this.userType));
+    formData.append('userType', this.userTypeString);
 
    /*
     formData.append('description', this.description);
