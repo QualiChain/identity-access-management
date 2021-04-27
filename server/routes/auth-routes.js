@@ -47,6 +47,8 @@ router.post('/validateToken', passport.authenticate('jwt', {session: false}), as
 
     if (req.user._doc.hasOwnProperty('id'))   {
         id = req.user.id;
+    }   else    {
+        id = req.user._id;
     }
     if (req.user._doc.hasOwnProperty('name'))   {
         name = req.user.name;
