@@ -121,10 +121,9 @@ router.post('/login', (req, res) => {
 
                 let userInfo = user._doc;
                 let payload = {};
-                //_id Needs to exist for database queries
+                //Necessary for get user by id
                 payload["_id"] = userInfo._id.toString();
-                //Id can be replaced by NTUA's ID
-                payload["id"] = userInfo._id.toString();
+                payload["id"] = 'IAM-' + userInfo._id.toString();
                 payload["name"] = userInfo.name;
                 payload["email"] = userInfo.email;
                 payload["remaining_attempts"] = userInfo.remaining_attempts;

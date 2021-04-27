@@ -39,27 +39,27 @@ router.post('/validateToken', passport.authenticate('jwt', {session: false}), as
     let name;
     let email;
     let roles;
-    let organization;
+    let organization
 
     if (!req.hasOwnProperty('user')) {
         UtilsRoutes.replyFailure(res,JSON.stringify(""),"An error has been encountered");
     }
 
-    if (req.user._doc.hasOwnProperty('id'))   {
+    if (req.user.hasOwnProperty('id'))   {
         id = req.user.id;
     }   else    {
         id = req.user._id;
     }
-    if (req.user._doc.hasOwnProperty('name'))   {
+    if (req.user.hasOwnProperty('name'))   {
         name = req.user.name;
     }
-    if (req.user._doc.hasOwnProperty('email')) {
+    if (req.user.hasOwnProperty('email')) {
         email = req.user.email;
     }
-    if (req.user._doc.hasOwnProperty('roles')) {
+    if (req.user.hasOwnProperty('roles')) {
         roles = req.user.roles;
     }
-    if (req.user._doc.hasOwnProperty('organization')) {
+    if (req.user.hasOwnProperty('organization')) {
         organization = req.user.organization;
     }
     try {
