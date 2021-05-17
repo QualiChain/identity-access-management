@@ -48,22 +48,23 @@ router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ fun
     let organization = req.fields.organization;
     let userType = req.fields.userType;
 
-    if (userType === "" || organization === "" || password === "" || email === "" || name === "")  {
+    //organization === ""
+    if (userType === "" || password === "" || email === "" || name === "")  {
         return UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
     }
 
-    if (userType === undefined || organization === undefined || password === undefined || email === undefined || name === undefined)  {
+    //organization === undefined
+    if (userType === undefined || password === undefined || email === undefined || name === undefined)  {
         return UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
     }
+
+
     userType = userType.split(',');
     //userType = JSON.parse(userType);
     organization = organization.split(',');
 
     if (userType.length === 0)  {
         return UtilsRoutes.replyFailure(res,"ERROR: Missing role. Please insert role","ERROR: Missing role. Please insert role");
-    }
-    if (organization.length === 0)  {
-        return UtilsRoutes.replyFailure(res,"ERROR: Missing organization. Please insert organization","ERROR: Missing organization. Please insert organization");
     }
 
     for (const candidateRole of userType)   {
