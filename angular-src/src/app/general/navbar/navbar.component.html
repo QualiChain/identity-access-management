@@ -23,8 +23,8 @@
                     </a>
                 </li> -->
                 <li [routerLinkActive]="['active']" class="nav-item">
-                    <a class="nav-link" [routerLink]="['/recruiting']"
-                                        [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
+                    <a class="nav-link" [routerLink]="isLoggedIn() ? ['/recruitingAuth'] : ['/recruiting']"
+                       [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
                         <p>Qualichain Recruiting Module</p>
                     </a>
                 </li>

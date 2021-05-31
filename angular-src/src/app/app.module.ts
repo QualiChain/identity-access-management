@@ -25,11 +25,13 @@ import { LoginComponent } from './general/login/login.component';
 import { ProfileComponent } from './general/profile/profile.component';
 import { LoginStudentComponent } from './general/login/login-student/login-student.component';
 import { LoginSealComponent } from './general/login/login-seal/login-seal.component';
+import {RecruitingAuthComponent} from "./qualichain/recruitingAuth/recruitingAuth.component";
 
 
 const appRoutes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'recruiting', component: RecruitingComponent},
+    {path: 'recruitingAuth', component: RecruitingAuthComponent},
     {path: 'register', children: [
             {path: '', component: RegisterComponent},
             {path: 'company', component: CompanyRegisterComponent}
@@ -57,6 +59,7 @@ const appRoutes: Routes = [
         FooterComponent,
         PrivacyPolicyComponent,
         RecruitingComponent,
+        RecruitingAuthComponent,
         LoginStudentComponent,
         LoginSealComponent
 
