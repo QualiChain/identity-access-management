@@ -142,7 +142,7 @@ router.post('/validateCertificateAuth', passport.authenticate('jwt', {session: f
             }
         });
     } catch (e) {
-        ba_logger.ba("BA|QUALICHAIN-RECRUITING|ERROR|");
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|ERROR|USER ${req.user.username}`);
         UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
         throw new Error(e);
     }
