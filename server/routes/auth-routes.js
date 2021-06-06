@@ -38,22 +38,37 @@ router.post('/validateToken', passport.authenticate('jwt', {session: false}), as
     let id;
     let name;
     let email;
+    let roles;
+    let organization
 
-    if (req.user.id)   {
-        id = req.user.id;
+    if (!req.hasOwnProperty('user')) {
+        UtilsRoutes.replyFailure(res,JSON.stringify(""),"An error has been encountered");
     }
-    if (req.user.name)   {
+
+    if (req.user.hasOwnProperty('id'))   {
+        id = req.user.id;
+    }   else    {
+        id = req.user._id;
+    }
+    if (req.user.hasOwnProperty('name'))   {
         name = req.user.name;
     }
-    if (req.user.email) {
+    if (req.user.hasOwnProperty('email')) {
         email = req.user.email;
+    }
+    if (req.user.hasOwnProperty('roles')) {
+        roles = req.user.roles;
+    }
+    if (req.user.hasOwnProperty('organization')) {
+        organization = req.user.organization;
     }
     try {
         const userInfo = {
             id: id,
             name: name,
             email: email,
-            roles: req.user.roles
+            roles: roles,
+            organizations: organization
         }
         UtilsRoutes.replySuccess(res, userInfo, "Token Validated");
 

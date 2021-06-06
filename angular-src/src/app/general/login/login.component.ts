@@ -21,6 +21,8 @@ export class LoginComponent implements OnInit {
     studentPath: string;
     professorPath: string;
     sealPath: string;
+    sealPathEidas: string;
+    sealPathBoth: string;
     redirectUri: string;
 
     caller: string;
@@ -47,12 +49,29 @@ export class LoginComponent implements OnInit {
         //https://ldapwiki.com/wiki/Openid-configuration
 
         //SEAL-EDUGAIN, SEAL-EIDAS,SEAL-EIDAS-EDUGAIN
-        const scopes = 'SEAL-EDUGAIN';
+        //Old serverurl https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth
+        const authServerUrl = 'https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth';
+        const edugain = 'SEAL-EDUGAIN';
+        const eidas = 'SEAL-EIDAS';
+        const both = 'SEAL-EIDAS-EDUGAIN';
 
-        this.sealPath = 'https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth?' +
+        // State redirects to profile page
+        const state = "/profile"
+
+        this.sealPath = authServerUrl + '?' +
             'client_id=' + clientId + '&redirect_uri=' +
             this.redirectUri + '&response_type=' + responseType +
-            '&scope=' + scopes;
+            '&scope=openid ' + edugain + '&state=openid,' + edugain;
+
+        this.sealPathEidas = authServerUrl + '?' +
+            'client_id=' + clientId + '&redirect_uri=' +
+            this.redirectUri + '&response_type=' + responseType +
+            '&scope=' + eidas + '&state=openid,' + eidas;
+
+        this.sealPathBoth = authServerUrl + '?' +
+            'client_id=' + clientId + '&redirect_uri=' +
+            this.redirectUri + '&response_type=' + responseType +
+            '&scope=' + both + '&state=openid,' + both;
 
         console.log("SEAL Path: " + this.sealPath);
 

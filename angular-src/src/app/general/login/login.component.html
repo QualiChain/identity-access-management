@@ -7,9 +7,9 @@
           <form #form="ngForm" (ngSubmit)="onLoginSubmit(form)" class="form-horizontal">
             <fieldset>
               <h2>Please insert your credentials</h2>
-              <input id="username" type="email" name="username" ngModel type="text" placeholder="Introduza o e-mail" class="form-control input-md">
+              <input id="username" type="email" name="username" ngModel type="text" placeholder="e-mail" class="form-control input-md">
               <div class="spacing"></div>
-              <input id="password" name="password" type="password" name="password" ngModel type="text" placeholder="Introduza a password" class="form-control">
+              <input id="password" name="password" type="password" name="password" ngModel  placeholder="password" class="form-control">
               <div class="spacing"></div>
               <button id="singlebutton" name="singlebutton" class="btn btn-info btn-sm pull-right" style="background-color:#2b68b0">Login</button>
             </fieldset>
@@ -24,19 +24,38 @@
     </div>
 
     <div class="row">
-            <div align="center" class="col-md-4" style="padding-top:2em">
-              <div>
-                <a #loginStudent [href]="sealPath" class="disabled btn btn-primary btn-lg">
-                  <i class="fa fa-graduation-cap"></i> Login with SEAL - STUDENT
-                </a> <div class="form-check">
+        <div align="center" class="col-md-4" style="padding-top:2em">
+            <a target="_blank" [href]="sealPath" class="btn btn-primary btn-lg">
+              <i class="fa fa-graduation-cap"></i> Login with SEAL - STUDENT (EDUGAIN)
+            </a>
+        </div>
+    </div>
+
+    <!--
+    <div class="row">
+        <div align="center" class="col-md-4" style="padding-top:2em">
+                    <a target="_blank" [href]="sealPathEidas" class="btn btn-primary btn-lg">
+                      <i class="fa fa-graduation-cap"></i> Login with SEAL - STUDENT (EIDAS)
+                    </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div align="center" class="col-md-4" style="padding-top:2em">
+
+            <a target="_blank" #loginStudent [href]="sealPathBoth" class=" btn btn-primary btn-lg">
+              <i class="fa fa-graduation-cap"></i> Login with SEAL - STUDENT (EDUGAIN + EIDAS)
+            </a>
+
+        </div>
+    </div>
                 <input (click)="toggleAuth() " class="form-check-input" type="checkbox" value="" id="defaultCheck1">
                 <label class="form-check-label" for="defaultCheck1">
                   I read and agree with the terms
                 </label>
-              </div>
-              </div>
+</div>
 
-            </div>
+-->
         <!--
             <div align="center" class="col-md-4" style="padding-top:2em">
               <div>
@@ -65,5 +84,3 @@
 
             </div>
         -->
-      </div>
-</div>

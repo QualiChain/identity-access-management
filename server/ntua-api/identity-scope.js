@@ -11,13 +11,13 @@ class IdentityScope {
 let identity = module.exports = exports = new IdentityScope();
 
 // Access Tokens
-function getPerson(email, callback) {
+function getPerson(email, name, roles, orgs, callback) {
     const uri = 'http://qualichain.epu.ntua.gr:5004/get/user/by/email';
     console.log(api_key);
     if (!api_key)   {
         return;
     }
-    let payload = {"email":email}
+    let payload = {"email":email, "name": name, "roles": roles, "organizations" : orgs};
     console.log("NTUA Request payload")
     Utils.unirestPost(api_key,uri, payload, callback)
 

@@ -41,20 +41,30 @@ router.options("/*", function(req, res, next){
 });
 
 //Registers a recruiter. Only users with the role "administrator" can do so.
-router.post('/register', passport.authenticate('jwt', {session: false}), function (req, res) {
-    if(!Iam.isAdministrator(req))    {
-        UtilsRoutes.replyFailure(res,"Only administrators can access this route",'');
-        return;
-    }
-
+router.post('/register', /*passport.authenticate('jwt', {session: false}),*/ function (req, res) {
     let name = req.fields.name;
     let email = req.fields.email;
     let password = req.fields.password;
     let organization = req.fields.organization;
-    let userType = JSON.parse(req.fields.userType);
+    let userType = req.fields.userType;
 
-    if (userType === "undefined" || organization === "undefined" || password === "undefined" || email === "undefined" || name === "undefined")  {
-        UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
+    //organization === ""
+    if (userType === "" || password === "" || email === "" || name === "")  {
+        return UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
+    }
+
+    //organization === undefined
+    if (userType === undefined || password === undefined || email === undefined || name === undefined)  {
+        return UtilsRoutes.replyFailure(res,"ERROR: Missing parameters","ERROR: Missing parameters");
+    }
+
+
+    userType = userType.split(',');
+    //userType = JSON.parse(userType);
+    organization = organization.split(',');
+
+    if (userType.length === 0)  {
+        return UtilsRoutes.replyFailure(res,"ERROR: Missing role. Please insert role","ERROR: Missing role. Please insert role");
     }
 
     for (const candidateRole of userType)   {
@@ -68,16 +78,16 @@ router.post('/register', passport.authenticate('jwt', {session: false}), functio
         if (err)  {
             if (err.name === 'MongoError' && err.code === 11000)    {
                 //Duplicated username or contact
-                return UtilsRoutes.replyFailure(res,err,DUP_ENTRY);
+                return UtilsRoutes.replyFailure(res,err,"The user with the email " + email + " already exists. Please provide another email");
             } else  {
                 return UtilsRoutes.replyFailure(res,err,ERROR);
             }
         }  else {
             ba_logger.ba(userType + ":" + name + "registered");
+            return UtilsRoutes.replySuccess(res,"added user",COMP_ADDED);
         }
     });
 
-    UtilsRoutes.replySuccess(res,"added user",COMP_ADDED);
 
 
 });
@@ -112,27 +122,28 @@ router.post('/login', (req, res) => {
 
                 let userInfo = user._doc;
                 let payload = {};
-                //_id Needs to exist for database queries
-                payload["_id"] = userInfo._id;
-                //Id can be replaced by NTUA's ID
-                payload["id"] = userInfo._id;
+                //Necessary for get user by id
+                payload["_id"] = userInfo._id.toString();
+                payload["id"] = 'IAM-' + userInfo._id.toString();
                 payload["name"] = userInfo.name;
                 payload["email"] = userInfo.email;
                 payload["remaining_attempts"] = userInfo.remaining_attempts;
                 payload["roles"] = userInfo.roles;
+                payload["organization"] = userInfo.organization;
 
                 console.log("New Login, original token content: \n", payload);
-                NtuaAPI.person.getPerson(email, async (response, error) =>  {
+                NtuaAPI.person.getPerson(payload.email, payload.name, payload.roles, payload.organization, async (response, error) =>  {
                     if (error)  {
-                        ba_logger.ba("Failed request to NTUA")
-                        throw new Error(error);
+                        ba_logger.ba("Failed request to NTUA");
+                        ba_logger.ba("Proceeding with login (id, name,userPath will be missing)");
+                        ba_logger.ba(error);
                     }   else    {
                         ba_logger.ba("Successful request to NTUA")
                         var parsedResponse = JSON.parse(response);
                         console.log(parsedResponse);
 
                         if (parsedResponse.id)    {
-                            payload['id'] = parsedResponse.id;
+                            payload['id'] = JSON.stringify(parsedResponse.id);
                             payload['name'] = parsedResponse.fullName;
                             payload['userPath'] = parsedResponse.userPath;
                             //payload['email'] = parsedResponse.email;
