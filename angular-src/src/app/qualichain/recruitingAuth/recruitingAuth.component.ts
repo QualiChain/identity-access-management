@@ -3,6 +3,7 @@ import { ValidateService} from '../../services/validate.service';
 import { QualichainAuthService} from '../../services/qualichainAuth.service';
 import { HttpResponse, HttpEventType } from '@angular/common/http';
 import {FlashMessagesService} from 'angular2-flash-messages';
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-recruiting',
@@ -25,13 +26,23 @@ export class RecruitingAuthComponent implements OnInit {
     uploaded: boolean = false;
   //Validation Retrieved
   status: string = 'Awaiting validation...';
+  user: any;
+  authToken: any;
+  roles: string[];
 
-  constructor(private qualichainAuthService: QualichainAuthService,
+  constructor(private authService: AuthService,
+              private qualichainAuthService: QualichainAuthService,
               private flashMessage: FlashMessagesService,
               private validateService: ValidateService) { }
 
   ngOnInit() {
+      this.loadUser();
+  }
 
+  loadUser() {
+    this.user = this.authService.loadUserProfile();
+    this.roles = this.authService.getCurrentUserRole();
+    this.authToken = this.authService.retrieveTokenUser();
   }
 
   handleFileInput(files: FileList) {
