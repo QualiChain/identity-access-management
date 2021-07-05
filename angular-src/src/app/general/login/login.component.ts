@@ -5,6 +5,7 @@ import {FlashMessagesService} from "angular2-flash-messages";
 import {ValidateService} from "../../services/validate.service";
 import {IamService} from '../../services/iam.service';
 import { Vars } from '../../../../.env'
+import * as uuid from 'uuid';
 
 @Component({
   selector: 'app-login',
@@ -51,27 +52,28 @@ export class LoginComponent implements OnInit {
         //SEAL-EDUGAIN, SEAL-EIDAS,SEAL-EIDAS-EDUGAIN
         //Old serverurl https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth
         const authServerUrl = 'https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth';
-        const edugain = 'SEAL-EDUGAIN';
-        const eidas = 'SEAL-EIDAS';
-        const both = 'SEAL-EIDAS-EDUGAIN';
+        const edugain = 'UAegean_myeduGAIN_ID';
+        const eidas = 'UAegean_myeIDAS_ID';
+        const both = 'UAegean_myLinkedID';
+        const nonce = uuid.v4();
 
         // State redirects to profile page
         const state = "/profile"
 
-        this.sealPath = authServerUrl + '?' +
+        this.sealPath = encodeURI(authServerUrl + '?' +
             'client_id=' + clientId + '&redirect_uri=' +
             this.redirectUri + '&response_type=' + responseType +
-            '&scope=openid ' + edugain + '&state=openid,' + edugain;
+            '&scope=openid ' + edugain + '&state=' + nonce + edugain);
 
-        this.sealPathEidas = authServerUrl + '?' +
+        this.sealPathEidas =encodeURI( authServerUrl + '?' +
             'client_id=' + clientId + '&redirect_uri=' +
             this.redirectUri + '&response_type=' + responseType +
-            '&scope=' + eidas + '&state=openid,' + eidas;
+            '&scope=openid ' + eidas + '&state=' + nonce + eidas);
 
-        this.sealPathBoth = authServerUrl + '?' +
+        this.sealPathBoth = encodeURI(authServerUrl + '?' +
             'client_id=' + clientId + '&redirect_uri=' +
             this.redirectUri + '&response_type=' + responseType +
-            '&scope=' + both + '&state=openid,' + both;
+            '&scope=openid ' + both + '&state=' + nonce + both);
 
         console.log("SEAL Path: " + this.sealPath);
 

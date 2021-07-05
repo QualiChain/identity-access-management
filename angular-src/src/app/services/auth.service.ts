@@ -86,7 +86,7 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
   }
 
 
-  loginSeal(code, scope) {
+  loginSeal(code, state) {
     let url: string;
     if (Vars.ENVIRONMENT === 'PRODUCTION')    {
       url = "auth/login/seal";
@@ -97,7 +97,7 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
     }
     const formData: FormData = new FormData();
     formData.append('code', code);
-    formData.append('scope', scope);
+    formData.append('state', state);
     const headers = new Headers();
     // @ts-ignore
     return this.http.post(url, formData, { headers: headers, observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));

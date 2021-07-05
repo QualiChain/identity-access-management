@@ -68,6 +68,7 @@ router.post('/validateCertificate', /*passport.authenticate('jwt', {session: fal
                     console.log(certificateHash)
                     if(err == null) {
                         if (hashBytes == certificateHash) {
+                            ba_logger.ba("BA|QUALICHAIN-RECRUITING|SUCCESS-VALIDATE|" + certificateHash);
                             UtilsRoutes.replySuccess(res, certificateHash, "Successful certificate verification");
                         } else {
                             let hashDiffers = 'Uploaded document hash, ' + hashBytes + ' differs from stored hash: ' + certificateHash;

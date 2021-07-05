@@ -4,8 +4,7 @@ var unirest = require('unirest');
 class Utils {
     constructor() {
         this.getRequest = getRequest;
-        this.unirestPost = unirestPost;
-    }
+        this.unirestPost = unirestPost;}
 }
 
 let utils = module.exports = exports = new Utils();
@@ -66,5 +65,3 @@ function unirestPost(api_key, uri, payload, callback) {
             return (callback(res.raw_body, null));
         });
 }
-
-
