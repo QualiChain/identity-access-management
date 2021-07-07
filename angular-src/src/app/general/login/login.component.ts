@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { Router, ActivatedRoute, Params} from "@angular/router";
 import {FlashMessagesService} from "angular2-flash-messages";
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
 
     constructor(private authService: AuthService, private router: Router, private activatedRoute: ActivatedRoute,
                 private flashMessage: FlashMessagesService, private validateService: ValidateService,
-                private IamService: IamService
+                private IamService: IamService, private cd: ChangeDetectorRef
     ) {
         const clientId = Vars.SEAL_CLIENT_ID;
 
@@ -129,6 +129,10 @@ export class LoginComponent implements OnInit {
         */
 
         this.router.navigate(['profile']);
+            if (!this.cd['destroyed']) {
+                this.cd.detectChanges();
+            }
+
       });
     }
 
@@ -157,5 +161,9 @@ export class LoginComponent implements OnInit {
         } else {
             this.myId3.nativeElement.attributes.class.nodeValue = "disabled btn btn-primary btn-lg";
         }
+    }
+
+    ngOnDestroy() {
+        this.cd.detach();
     }
 }
