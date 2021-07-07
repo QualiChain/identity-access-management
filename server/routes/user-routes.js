@@ -8,7 +8,13 @@ const Iam = require('../routes/iam');
 const ba_logger = require('../log/ba_logger');
 const passport = require('passport');
 const NtuaAPI = require('../ntua-api/ntua');
+const uuid = require("uuid");
 require('dotenv').load();
+const nodemailer = require("nodemailer");
+let NODEMAILER_USER = process.env.NODEMAILER_USER;
+let NODEMAILER_PASS = process.env.NODEMAILER_PASS;
+
+
 const DB_SECRET = process.env.DB_SECRET;
 const JWT_ALGORITHM = process.env.JWT_ALGORITHM;
 const JWT_LIFETIME = process.env.JWT_LIFETIME;
@@ -167,6 +173,86 @@ router.post('/login', (req, res) => {
 
     });
 });
+
+router.post('/changePassword', /*passport.authenticate('jwt', {session: false}),*/ async (req, res) => {
+    const ip = req.connection.remoteAddress;
+    let userEmail = req.fields.email;
+
+    ba_logger.ba('Attempt of changing the password of ' + userEmail + ' by ' + ip);
+    console.log('Attempt of changing the password of ' + userEmail + ' by ' + ip);
+
+    if (!userEmail) {
+        return UtilsRoutes.replyFailure(res,"","Please provide a user email to recover the password");
+    }
+
+    try     {
+        DBAccess.users.getUserByEmail(userEmail, async (err, user)=>   {
+            if (err || !user)  {
+                return UtilsRoutes.replyFailure(res, err, "No such user" );
+            }
+
+            const nonce = uuid.v4();
+            const newPassword = nonce.replace(/-/g,'');
+            const hashedPassword = await Utils.returnHash(newPassword);
+            const now = Utils.getTime();
+            console.log("hashedPassword is:");
+            console.log(hashedPassword);
+            DBAccess.users.changePassword(userEmail, hashedPassword, async (err, user) =>    {
+                if (err)    {
+                    UtilsRoutes.replyFailure(res,err,"Error setting up the new password");
+                    throw new Error (err);
+                }
+                if (user)  {
+                    let testAccount = await nodemailer.createTestAccount();
+
+                    // create reusable transporter object using the default SMTP transport
+                    let transporter = nodemailer.createTransport({
+                        host: "smtp.ethereal.email",
+                        port: 587,
+                        secure: false, // true for 465, false for other ports
+                        auth: {
+                            user: testAccount.user, // generated ethereal user
+                            pass: testAccount.pass, // generated ethereal password
+                        },
+                    });
+                    // send mail with defined transport object
+                    let info = await transporter.sendMail({
+                        from: '"Qualichain" <admin@qualichain.com>', // sender address
+                        to: userEmail, // list of receivers
+                        subject: "Qualichain Password Reset", // Subject line
+                        text: "Your new password from Qualichain, generated at " + now +
+                            " is " + "<b>" + newPassword + "</b>", // plain text body
+                        html: "Your new password from Qualichain, generated at " + now +
+                        " is " + "<b>" + newPassword + "</b>", // html body
+                    });
+
+                    ba_logger.ba("Message sent: %s", info.messageId);
+                    console.log("Message sent: %s", info.messageId);
+                    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+                    // Preview only available when sending through an Ethereal account
+                    ba_logger.ba("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+                    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+                    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+
+                    return UtilsRoutes.replySuccess(res, true, "Password has been changed. Please check your e-mail." );
+                }
+                else {
+                    return UtilsRoutes.replySuccess(res, false, "There was a problem changing your password");
+                }
+            })
+
+        });
+
+    } catch (e) {
+        ba_logger.ba("BA||ERROR|");
+        UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
+        throw new Error(e);
+    }
+});
+
+
+
 
 router.post('/testNTUA', passport.authenticate('jwt', {session: false}), async (req, res) =>     {
     if(!Iam.isAdministrator(req))    {
