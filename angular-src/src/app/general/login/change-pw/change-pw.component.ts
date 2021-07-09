@@ -34,17 +34,13 @@ export class ChangePwComponent implements OnInit {
     this.authService.changePassword(formData).subscribe( response => {
 
       if (response.succeeded) {
-        this.authService.storeData(response.response_data.user, response.response_data.token);
+        //this.authService.storeData(response.response_data.user, response.response_data.token);
         this.flashMessage.show(response.message, {cssClass: 'alert-info', timeout: 3000});
+        this.router.navigate(['/', 'login']);
+
       } else {
         this.flashMessage.show(response.message, {cssClass: 'alert-danger', timeout: 1000});
-        this.router.navigate(['/', 'login']);
       }
-
-
-      this.router.navigate(['login']);
-
-
     });
   }
 }

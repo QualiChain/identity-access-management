@@ -55,7 +55,7 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
 
     const headers = new Headers();
     if (Vars.ENVIRONMENT === 'PRODUCTION')    {
-      this.login_url = "users/login";
+      this.login_url = "https://qualichain.herokuapp.com/users/changePassword";
     } else if (Vars.ENVIRONMENT === 'INTEGRATION')    {
       this.login_url = "https://qualichain.herokuapp.com/users/changePassword";
     } else if (Vars.ENVIRONMENT === 'TEST')    {
