@@ -11,8 +11,10 @@ const NtuaAPI = require('../ntua-api/ntua');
 const uuid = require("uuid");
 require('dotenv').load();
 const nodemailer = require("nodemailer");
-let NODEMAILER_USER = process.env.NODEMAILER_USER;
-let NODEMAILER_PASS = process.env.NODEMAILER_PASS;
+let MAIL_HOST = process.env.MAIL_HOST;
+let MAIL_PORT = process.env.MAIL_PORT;
+let MAIL_PASSWORD = process.env.MAIL_PASSWORD;
+let MAIL_USERNAME = process.env.MAIL_USERNAME;
 
 
 const DB_SECRET = process.env.DB_SECRET;
@@ -178,8 +180,8 @@ router.post('/changePassword', /*passport.authenticate('jwt', {session: false}),
     const ip = req.connection.remoteAddress;
     let userEmail = req.fields.email;
 
-    ba_logger.ba('Attempt of changing the password of ' + userEmail + ' by ' + ip);
-    console.log('Attempt of changing the password of ' + userEmail + ' by ' + ip);
+    ba_logger.ba('BA|ChangePW|Attempt of changing the password of ' + userEmail + ' by ' + ip);
+    console.log('BA|ChangePW|Attempt of changing the password of ' + userEmail + ' by ' + ip);
 
     if (!userEmail) {
         return UtilsRoutes.replyFailure(res,"","Please provide a user email to recover the password");
@@ -203,21 +205,20 @@ router.post('/changePassword', /*passport.authenticate('jwt', {session: false}),
                     throw new Error (err);
                 }
                 if (user)  {
-                    let testAccount = await nodemailer.createTestAccount();
 
                     // create reusable transporter object using the default SMTP transport
                     let transporter = nodemailer.createTransport({
-                        host: "smtp.ethereal.email",
-                        port: 587,
+                        host: MAIL_HOST,
+                        port: MAIL_PORT,
                         secure: false, // true for 465, false for other ports
                         auth: {
-                            user: testAccount.user, // generated ethereal user
-                            pass: testAccount.pass, // generated ethereal password
+                            user: MAIL_USERNAME, // generated ethereal user
+                            pass: MAIL_PASSWORD, // generated ethereal password
                         },
                     });
                     // send mail with defined transport object
                     let info = await transporter.sendMail({
-                        from: '"Qualichain" <admin@qualichain.com>', // sender address
+                        from: '"Qualichain" <qualichain@sapo.pt>', // sender address
                         to: userEmail, // list of receivers
                         subject: "Qualichain Password Reset", // Subject line
                         text: "Your new password from Qualichain, generated at " + now +
@@ -226,15 +227,9 @@ router.post('/changePassword', /*passport.authenticate('jwt', {session: false}),
                         " is " + "<b>" + newPassword + "</b>", // html body
                     });
 
-                    ba_logger.ba("Message sent: %s", info.messageId);
-                    console.log("Message sent: %s", info.messageId);
+                    ba_logger.ba("BA|PWChanged|Sent email to %s", info.accepted);
+                    console.log("BA|PWChanged|Sent email to %s", info.accepted);
                     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-                    // Preview only available when sending through an Ethereal account
-                    ba_logger.ba("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-                    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-                    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-
                     return UtilsRoutes.replySuccess(res, true, "Password has been changed. Please check your e-mail." );
                 }
                 else {
