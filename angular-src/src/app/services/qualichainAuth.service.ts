@@ -24,19 +24,17 @@ export class QualichainAuthService {
       console.log(formData.get('file'))
       console.log(formData.get('did'))
       console.log(formData.get('civilId'))
-      console.log("Env Vars")
-      console.log(Vars)
       let headers = new Headers();
       if (Vars.ENVIRONMENT === 'PRODUCTION')    {
           this.url = "qualichain/validateCertificateAuth";
       } else if (Vars.ENVIRONMENT === 'INTEGRATION')    {
           this.url = "https://qualichain.herokuapp.com/qualichain/validateCertificateAuth";
       }
-      headers.append('Content-Type', 'application/json');
+      // headers.append('Content-Type', 'application/json');
 
-    this.authService.loadTokenUser(headers);
+      this.authService.loadTokenUser(headers);
 
-    // @ts-ignore
-      return this.http.post(this.url, formData, { observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));
+      // @ts-ignore
+      return this.http.post(this.url, formData, { observe: 'events',  reportProgress: true, headers: headers }).pipe(map(res => res.json()));
   }
 }

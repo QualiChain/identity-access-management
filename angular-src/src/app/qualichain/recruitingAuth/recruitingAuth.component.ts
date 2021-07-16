@@ -77,12 +77,10 @@ export class RecruitingAuthComponent implements OnInit {
       formData.append('certificate', (<HTMLInputElement>document.getElementById('myCertificate')).files[0]);
       formData.append('did', data.did);
       formData.append('civilId', data.civilId);
-      console.log("DATA:");
-      console.log(data);
-      console.log("FORM DATA:");
-      console.log(formData);
+
       this.qualichainAuthService.validateCertificate(formData).subscribe(data => {
           this.status = 'Done'
+          console.log("IM HEREEEEEEEEE")
           console.log(data);
           if (data.succeeded) {
                 this.error = false;
