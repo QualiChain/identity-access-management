@@ -210,7 +210,7 @@ router.post('/changePassword', /*passport.authenticate('jwt', {session: false}),
                     let transporter = nodemailer.createTransport({
                         host: MAIL_HOST,
                         port: MAIL_PORT,
-                        secure: false, // true for 465, false for other ports
+                        secure: true, // true for 465, false for other ports
                         auth: {
                             user: MAIL_USERNAME, // generated ethereal user
                             pass: MAIL_PASSWORD, // generated ethereal password
