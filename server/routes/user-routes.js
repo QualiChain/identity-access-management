@@ -15,6 +15,8 @@ let MAIL_HOST = process.env.MAIL_HOST;
 let MAIL_PORT = process.env.MAIL_PORT;
 let MAIL_PASSWORD = process.env.MAIL_PASSWORD;
 let MAIL_USERNAME = process.env.MAIL_USERNAME;
+let MAIL_FROM_FIELD = process.env.MAIL_FROM_FIELD;
+let MAIL_FROM_DOMAIN = process.env.MAIL_FROM_DOMAIN;
 
 
 const DB_SECRET = process.env.DB_SECRET;
@@ -216,9 +218,10 @@ router.post('/changePassword', /*passport.authenticate('jwt', {session: false}),
                             pass: MAIL_PASSWORD, // generated ethereal password
                         },
                     });
+
                     // send mail with defined transport object
                     let info = await transporter.sendMail({
-                        from: '"Qualichain" <qualichain@sapo.pt>', // sender address
+                        from: `"${MAIL_FROM_FIELD}" <${MAIL_FROM_DOMAIN}>`, // sender address
                         to: userEmail, // list of receivers
                         subject: "Qualichain Password Reset", // Subject line
                         text: "Your new password from Qualichain, generated at " + now +
