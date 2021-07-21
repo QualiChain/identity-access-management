@@ -80,7 +80,6 @@ export class RecruitingAuthComponent implements OnInit {
 
       this.qualichainAuthService.validateCertificate(formData).subscribe(data => {
           this.status = 'Done'
-          console.log("IM HEREEEEEEEEE")
           console.log(data);
           if (data.succeeded) {
                 this.error = false;
@@ -102,5 +101,4 @@ export class RecruitingAuthComponent implements OnInit {
         console.log(error);
       });
   }
-
 }
