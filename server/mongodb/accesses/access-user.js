@@ -23,13 +23,13 @@ let access_user = module.exports = exports = new AccessUser();
  *  C.R.U.D. FUNCTIONS
  *******************************/
 
-function addUser(name, email, password, organization, role, callback) {
+function addUser(name, email, password, organizations, roles, callback) {
     let newUser = new User({
         name: name,
         email: email,
         password: null,
-        organization: organization,
-        roles: role
+        organization: organizations,
+        roles: roles
     });
 
     bcrypt.genSalt(saltRounds, function (err, salt) {

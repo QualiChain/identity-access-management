@@ -133,7 +133,8 @@ async function createIdentityToken(token, payload, isSEAL=false)    {
             id: payload["id"],
             email: payload["email"],
             name: payload["name"],
-            roles: payload["roles"]
+            roles: payload["roles"],
+            organizations: payload["organization"],
         },
     };
 

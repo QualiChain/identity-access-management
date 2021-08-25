@@ -16,8 +16,9 @@ export class CompanyRegisterComponent implements OnInit {
 
   name: string = undefined;
   email: string = undefined;
-  organization: string = undefined;
+  organization: string = "";
   userType: string[] = [];
+  userTypeString: string = "";
   left: string;
   right: string;
   middle: string;
@@ -78,19 +79,23 @@ export class CompanyRegisterComponent implements OnInit {
 
 
     this.userType = [];
+    this.userTypeString = "";
     let roles = this.checkboxGroupForm.value;
     for (const value in roles)  {
 
       if (roles[value])  {
         this.userType.push(value);
+        this.userTypeString += value + ',';
       }
     }
+    this.userTypeString = this.userTypeString.slice(0,this.userTypeString.length - 1);
+    console.log(this.userTypeString);
     const formData: FormData = new FormData();
     formData.append('name', this.name);
     formData.append('email', this.email);
     formData.append('password', this.password);
     formData.append('organization', this.organization);
-    formData.append('userType', JSON.stringify(this.userType));
+    formData.append('userType', this.userTypeString);
 
    /*
     formData.append('description', this.description);
@@ -111,12 +116,10 @@ export class CompanyRegisterComponent implements OnInit {
 
       }
       else {
-        document.getElementById('responseBoxError').innerText = data.message;
+        //document.getElementById('responseBoxError').innerText = data.message;
+        this.flashMessage.show(data.message, {cssClass: 'alert-danger', timeout: 5000});
         console.log(data.error);
       }
-      }, error => {
-        document.getElementById('responseBoxError').innerText = error;
-        console.log(error);
       });
 
 

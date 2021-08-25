@@ -13,7 +13,7 @@ module.exports = exports = function passportUser (passport){
         passport.use(new JwtStrategy(opts, (jwt_payload, done) => {
             DBAccess.users.getUserById(jwt_payload._id, (err, user) => {
                 if (err) return done(err, false);
-                if (user) return done(null, user);
+                if (user) return done(null, jwt_payload);
                 else return done(null, false);
             });
         }));
