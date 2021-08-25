@@ -23,6 +23,13 @@
                     </a>
                 </li> -->
                 <li [routerLinkActive]="['active']" class="nav-item">
+                    <a class="nav-link" [routerLink]="isLoggedIn() ? ['/consortiumAuth'] : ['/consortium']"
+                       [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
+                        <p>Consortium</p>
+                    </a>
+                </li>
+
+                <li [routerLinkActive]="['active']" class="nav-item">
                     <a class="nav-link" [routerLink]="isLoggedIn() ? ['/recruitingAuth'] : ['/recruiting']"
                        [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
                         <p>Qualichain Recruiting Module</p>
