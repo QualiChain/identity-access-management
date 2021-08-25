@@ -11,10 +11,22 @@ const consortiumABI = [{"inputs":[],"payable":false,"stateMutability":"nonpayabl
 const consortiumContract = new web3.eth.Contract(consortiumABI,consortiumAddress);
 const issuerContractABI = [{"constant":false,"inputs":[{"name":"id","type":"uint256"}],"name":"revokeCertificate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"id","type":"uint256"}],"name":"verifyCertificate","outputs":[{"name":"hash","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"id","type":"uint256"},{"name":"hash","type":"bytes32"}],"name":"registerCertificate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}];
 const fs = require('fs');
+const Transaction = require('ethereumjs-tx').Transaction;
+const ecdsaSign = require('secp256k1');
+const IPFS = require('ipfs');
+let IPFSNode = null;
+
+const account = '0x2CefB619218825C0c670D8E77f7039e0693E1dDC';
+const privateKey = Buffer.from('26020431000baecb5e0ae79cc2fca00a8c4ce6e299889dcaa3a12b469383f2b5', 'hex');
+const contractAddress = '0xc2C6789CbdA002E2607296e6e22a827B1C11B0F5';
+const contractABI = [{'constant': false, 'inputs': [{'name': 'id', 'type': 'uint256'}], 'name': 'revokeCertificate', 'outputs': [], 'payable': false, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': true, 'inputs': [{'name': 'id', 'type': 'uint256'}], 'name': 'verifyCertificate', 'outputs': [{'name': 'hash', 'type': 'bytes32'}], 'payable': false, 'stateMutability': 'view', 'type': 'function'}, {'constant': false, 'inputs': [{'name': 'id', 'type': 'uint256'}, {'name': 'hash', 'type': 'bytes32'}], 'name': 'registerCertificate', 'outputs': [], 'payable': false, 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [], 'payable': false, 'stateMutability': 'nonpayable', 'type': 'constructor'}];
+const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+let txCount = 0;
 
 router.post('/validateCertificate', /*passport.authenticate('jwt', {session: false}),*/ async (req, res) => {
     try {
-        ba_logger.ba("BA|QUALICHAIN-RECRUITING|INCOMING-REQUEST|");
+        ba_logger.ba("BA|QUALICHAIN-RECRUITING|VALIDATE|INCOMING-REQUEST|");
         //req.fields contains non-file fields
         //req.files contains files
         console.log(req.fields)
@@ -74,7 +86,7 @@ router.post('/validateCertificate', /*passport.authenticate('jwt', {session: fal
             }
         });
     } catch (e) {
-        ba_logger.ba("BA|QUALICHAIN-RECRUITING|ERROR|");
+        ba_logger.ba("BA|QUALICHAIN-RECRUITING|VALIDATE|ERROR|");
         UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
         throw new Error(e);
     }
@@ -82,7 +94,7 @@ router.post('/validateCertificate', /*passport.authenticate('jwt', {session: fal
 
 router.post('/validateCertificateAuth', passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
-        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|INCOMING-REQUEST|USER ${req.user.username}`);
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|VALIDATE|INCOMING-REQUEST|USER ${req.user.username}`);
         //req.fields contains non-file fields
         //req.files contains files
         console.log(req.fields)
@@ -142,10 +154,146 @@ router.post('/validateCertificateAuth', passport.authenticate('jwt', {session: f
             }
         });
     } catch (e) {
-        ba_logger.ba("BA|QUALICHAIN-RECRUITING|ERROR|");
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|VALIDATE|ERROR|USER ${req.user.username}`);
         UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
         throw new Error(e);
     }
 });
+
+router.post('/registerCertificate', /*passport.authenticate('jwt', {session: false}),*/ async (req, res) => {
+    try {
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|INCOMING-REQUEST`);
+
+        const certificate = req.files.certificate;
+        let fileBytes = fs.readFileSync(certificate.path);
+
+        await web3.eth.getTransactionCount(account, 'pending', (err, count) => {
+            txCount = count;
+        });
+
+        const hashFunction = crypto.createHash('sha256');
+        hashFunction.update(fileBytes);
+        const hash = hashFunction.digest();
+
+        const numberId = Number(req.fields.civilId);
+        if (isNaN(numberId)) {
+            throw new Error('The name of the certificate should contain only integers, and end in .pdf');
+        }
+
+        const hashBytes = '0x' + hash.toString('hex');
+
+        const data = contract.methods.registerCertificate(numberId, hashBytes).encodeABI();
+
+        const accountNonce = '0x' + (txCount).toString(16);
+
+        const txObject = {
+            nonce: accountNonce,
+            gasLimit: web3.utils.toHex(3000000),
+            gasPrice: web3.utils.toHex(web3.utils.toWei('100', 'gwei')),
+            from: account,
+            to: contractAddress,
+            data: data,
+            chainId: await web3.eth.net.getId()
+        };
+
+        const tx = new Transaction(txObject, { chain: 'ropsten' });
+        tx.sign(privateKey);
+        const serializedTx = tx.serialize();
+
+        const txData = '0x' + serializedTx.toString('hex');
+
+        txCount++;
+
+        web3.eth.sendSignedTransaction(txData, (err, txHash) => {
+            if (err == null) {
+                ba_logger.ba('Transaction hash: ', txHash);
+                registerIPFS(certificate.path, fileBytes);
+                UtilsRoutes.replySuccess(res, txHash, "Successful certificate registration");
+            } else {
+                ba_logger.ba(err);
+                UtilsRoutes.replyFailure(res, err,"Registration Failed");
+            }
+        });
+    } catch (e) {
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|ERROR`);
+        UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
+        throw new Error(e);
+    }
+});
+
+router.post('/registerCertificateAuth', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    try {
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|INCOMING-REQUEST|USER ${req.user.username}`);
+
+        const certificate = req.files.certificate;
+        let fileBytes = fs.readFileSync(certificate.path);
+
+        await web3.eth.getTransactionCount(account, 'pending', (err, count) => {
+            txCount = count;
+        });
+
+        const hashFunction = crypto.createHash('sha256');
+        hashFunction.update(fileBytes);
+        const hash = hashFunction.digest();
+
+        const numberId = Number(req.fields.civilId);
+        if (isNaN(numberId)) {
+            throw new Error('The name of the certificate should contain only integers, and end in .pdf');
+        }
+
+        const hashBytes = '0x' + hash.toString('hex');
+
+        const data = contract.methods.registerCertificate(numberId, hashBytes).encodeABI();
+
+        const accountNonce = '0x' + (txCount).toString(16);
+
+        const txObject = {
+            nonce: accountNonce,
+            gasLimit: web3.utils.toHex(3000000),
+            gasPrice: web3.utils.toHex(web3.utils.toWei('100', 'gwei')),
+            from: account,
+            to: contractAddress,
+            data: data,
+            chainId: await web3.eth.net.getId()
+        };
+
+        const tx = new Transaction(txObject, { chain: 'ropsten' });
+        tx.sign(privateKey);
+        const serializedTx = tx.serialize();
+
+        const txData = '0x' + serializedTx.toString('hex');
+
+        txCount++;
+
+        web3.eth.sendSignedTransaction(txData, (err, txHash) => {
+            if (err == null) {
+                ba_logger.ba('Transaction hash: ', txHash);
+                registerIPFS(certificate.path, fileBytes);
+                UtilsRoutes.replySuccess(res, txHash, "Successful certificate registration");
+            } else {
+                ba_logger.ba(err);
+                UtilsRoutes.replyFailure(res, err,"Registration Failed");
+            }
+        });
+    } catch (e) {
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|ERROR|USER ${req.user.username}`);
+        UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
+        throw new Error(e);
+    }
+});
+
+async function registerIPFS(path, fileBytes) {
+    if(IPFSNode == null) {
+        IPFSNode = await IPFS.create({ silent: true });
+    }
+
+    try {
+        const result = await IPFSNode.add(fileBytes);
+        ba_logger.ba('Added file: ', path, ' Multihash: ', result["path"]);
+
+    } catch (error) {
+        ba_logger.ba(error);
+    }
+}
 
 module.exports = router;

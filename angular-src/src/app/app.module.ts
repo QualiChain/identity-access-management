@@ -12,31 +12,34 @@ import { AuthService } from './services/auth.service';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AuthGuardService } from './services/auth-guard.service';
 import { FooterComponent } from './general/footer/footer.component';
-import {MockBackend} from '@angular/http/testing';
+import { MockBackend } from '@angular/http/testing';
 import { AgmCoreModule } from '@agm/core';
 import { PrivacyPolicyComponent } from './general/privacy-policy/privacy-policy.component';
-import { Vars } from  '../../.env';
+import { Vars } from '../../.env';
 import { ChartsModule } from 'ng2-charts';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { RecruitingComponent } from './qualichain/recruiting/recruiting.component'
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RecruitingComponent } from './qualichain/recruiting/recruiting.component';
+import { RecruitingAuthComponent } from './qualichain/recruitingAuth/recruitingAuth.component';
+import { ConsortiumComponent } from './qualichain/consortium/consortium.component';
+import { ConsortiumAuthComponent } from './qualichain/consortiumAuth/consortiumAuth.component';
 import { RegisterComponent} from './general/register/register.component';
 import { CompanyRegisterComponent } from './general/register/company-register/company-register.component';
 import { LoginComponent } from './general/login/login.component';
 import { ProfileComponent } from './general/profile/profile.component';
 import { LoginStudentComponent } from './general/login/login-student/login-student.component';
 import { LoginSealComponent } from './general/login/login-seal/login-seal.component';
-import {RecruitingAuthComponent} from "./qualichain/recruitingAuth/recruitingAuth.component";
-
 
 const appRoutes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'recruiting', component: RecruitingComponent},
-    {path: 'recruitingAuth', component: RecruitingAuthComponent},
+    {path: 'recruitingAuth', component: RecruitingAuthComponent, canActivate: [AuthGuardService]},
+    {path: 'consortium', component: ConsortiumComponent},
+    {path: 'consortiumAuth', component: ConsortiumAuthComponent, canActivate: [AuthGuardService]},
     {path: 'register', children: [
             {path: '', component: RegisterComponent},
             {path: 'company', component: CompanyRegisterComponent}
         ]},
-    {path: 'profile', component: ProfileComponent, canActivate:[AuthGuardService]},
+    {path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService]},
 
     {path: 'login', children: [
             {path: '', component: LoginComponent},
@@ -60,6 +63,8 @@ const appRoutes: Routes = [
         PrivacyPolicyComponent,
         RecruitingComponent,
         RecruitingAuthComponent,
+        ConsortiumComponent,
+        ConsortiumAuthComponent,
         LoginStudentComponent,
         LoginSealComponent
 
