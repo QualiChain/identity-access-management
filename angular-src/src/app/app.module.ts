@@ -20,6 +20,8 @@ import { ChartsModule } from 'ng2-charts';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RecruitingComponent } from './qualichain/recruiting/recruiting.component';
 import { RecruitingAuthComponent } from './qualichain/recruitingAuth/recruitingAuth.component';
+import { ConsortiumComponent } from './qualichain/consortium/consortium.component';
+import { ConsortiumAuthComponent } from './qualichain/consortiumAuth/consortiumAuth.component';
 import { RegisterComponent} from './general/register/register.component';
 import { CompanyRegisterComponent } from './general/register/company-register/company-register.component';
 import { LoginComponent } from './general/login/login.component';
@@ -30,12 +32,14 @@ import { LoginSealComponent } from './general/login/login-seal/login-seal.compon
 const appRoutes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'recruiting', component: RecruitingComponent},
-    {path: 'recruitingAuth', component: RecruitingAuthComponent, canActivate:[AuthGuardService]},
+    {path: 'recruitingAuth', component: RecruitingAuthComponent, canActivate: [AuthGuardService]},
+    {path: 'consortium', component: ConsortiumComponent},
+    {path: 'consortiumAuth', component: ConsortiumAuthComponent, canActivate: [AuthGuardService]},
     {path: 'register', children: [
             {path: '', component: RegisterComponent},
             {path: 'company', component: CompanyRegisterComponent}
         ]},
-    {path: 'profile', component: ProfileComponent, canActivate:[AuthGuardService]},
+    {path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService]},
 
     {path: 'login', children: [
             {path: '', component: LoginComponent},
@@ -59,6 +63,8 @@ const appRoutes: Routes = [
         PrivacyPolicyComponent,
         RecruitingComponent,
         RecruitingAuthComponent,
+        ConsortiumComponent,
+        ConsortiumAuthComponent,
         LoginStudentComponent,
         LoginSealComponent
 

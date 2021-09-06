@@ -3,6 +3,7 @@ import { ValidateService} from '../../services/validate.service';
 import { QualichainAuthService} from '../../services/qualichainAuth.service';
 import { HttpResponse, HttpEventType } from '@angular/common/http';
 import {FlashMessagesService} from 'angular2-flash-messages';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-recruiting',
@@ -11,27 +12,36 @@ import {FlashMessagesService} from 'angular2-flash-messages';
 })
 export class RecruitingAuthComponent implements OnInit {
   // Successful; Error; Not Successful
-  validationStatus: string = '';
+  validationStatus = '';
   fileToUpload: File = null;
   inputDID: string;
   inputCivilID: string;
   response: any = 'Response from the request goes here';
   responseBox: HTMLElement;
-    isMultipleUploaded = false;
-    isSingleUploaded = false;
-    acceptedExtensions = "jpg, jpeg, bmp, png, wav, mp3, mp4";
-    errorBox: any = 'Any errors from the request goes here'
-    error: boolean = false;
-    uploaded: boolean = false;
-  //Validation Retrieved
-  status: string = 'Awaiting validation...';
+  isMultipleUploaded = false;
+  isSingleUploaded = false;
+  acceptedExtensions = 'jpg, jpeg, bmp, png, wav, mp3, mp4';
+  errorBox: any = 'Any errors from the request goes here';
+  error = false;
+  uploaded = false;
+  status = 'Awaiting validation...';
+  user: any;
+  authToken: any;
+  roles: string[];
 
-  constructor(private qualichainAuthService: QualichainAuthService,
+  constructor(private authService: AuthService,
+              private qualichainAuthService: QualichainAuthService,
               private flashMessage: FlashMessagesService,
               private validateService: ValidateService) { }
 
   ngOnInit() {
+      this.loadUser();
+  }
 
+  loadUser() {
+    this.user = this.authService.loadUserProfile();
+    this.roles = this.authService.getCurrentUserRole();
+    this.authToken = this.authService.retrieveTokenUser();
   }
 
   handleFileInput(files: FileList) {
@@ -66,10 +76,7 @@ export class RecruitingAuthComponent implements OnInit {
       formData.append('certificate', (<HTMLInputElement>document.getElementById('myCertificate')).files[0]);
       formData.append('did', data.did);
       formData.append('civilId', data.civilId);
-      console.log("DATA:");
-      console.log(data);
-      console.log("FORM DATA:");
-      console.log(formData);
+
       this.qualichainAuthService.validateCertificate(formData).subscribe(data => {
           this.status = 'Done'
           console.log(data);
@@ -93,5 +100,4 @@ export class RecruitingAuthComponent implements OnInit {
         console.log(error);
       });
   }
-
 }

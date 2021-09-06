@@ -33,8 +33,8 @@ export class ProfileComponent implements OnInit {
         this.user = this.authService.loadUserProfile();
         this.roles = this.authService.getCurrentUserRole();
         this.authToken = this.authService.retrieveTokenUser();
-
     }
+
     iAmStudent()    {
         this.IamService.iAmStudent().subscribe(data => {
             console.log(data);
