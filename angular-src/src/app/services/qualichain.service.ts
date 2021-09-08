@@ -29,7 +29,7 @@ export class QualichainService {
       headers.append('Content-Type', 'application/json');
 
       // @ts-ignore
-      return this.http.post(this.url, formData, { observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));
+      return this.http.post(this.validateUrl, formData, { observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));
   }
 
   registerCertificate(formData) {
