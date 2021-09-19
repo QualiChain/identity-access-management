@@ -13,7 +13,6 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AuthGuardService } from './services/auth-guard.service';
 import { FooterComponent } from './general/footer/footer.component';
 import { MockBackend } from '@angular/http/testing';
-import { AgmCoreModule } from '@agm/core';
 import { PrivacyPolicyComponent } from './general/privacy-policy/privacy-policy.component';
 import { Vars } from '../../.env';
 import { ChartsModule } from 'ng2-charts';
@@ -88,6 +87,8 @@ const appRoutes: Routes = [
         NgbModule,
         ReactiveFormsModule,
         ChartsModule,
+        RouterModule.forRoot(appRoutes),
+        FlashMessagesModule,
         JwtModule.forRoot({
             config: {
                 whitelistedDomains: ['localhost:3001', 'localhost:8080', 'qualichain.herokuapp.com',
@@ -95,11 +96,6 @@ const appRoutes: Routes = [
                                     'dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth']
             }
         }),
-        RouterModule.forRoot(appRoutes),
-        AgmCoreModule.forRoot({
-            apiKey: Vars.GOOGLE_MAPS,
-        }),
-        FlashMessagesModule,
     ],
     providers: [
         ValidateService,
