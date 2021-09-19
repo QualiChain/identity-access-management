@@ -9,6 +9,7 @@ const Iam = require('../routes/iam');
 const ba_logger = require('../log/ba_logger');
 const passport = require('passport');
 const sealApi = require('../seal-api/seal');
+const uuid = require("uuid");
 router.get('/oidc/.well-known/openid-configuration', async (req, res) => {
     try {
         let wellKnown = UtilsRoutes.getWellKnown();
@@ -140,6 +141,12 @@ router.post('/verifyRecruiter', /*passport.authenticate('jwt', {session: false})
     }
 });
 
+//todo change to seal
+router.get('/login/init', async function (req, res) {
+    const uri = await sealApi.getUri();
+    res.redirect(uri)
+})
+
 router.post('/login/seal', async (req, res) => {
     const code = req.fields.code;
     const state = req.fields.state;
@@ -156,35 +163,44 @@ router.post('/login/seal', async (req, res) => {
     const ip = req.connection.remoteAddress;
     ba_logger.ba("BA|AUTH|LOGIN_SEAL|" + ip);
     try {
-        let accessToken = await sealApi.getAccessTokenSEAL(code, scope);
-        console.log("accessToken is: ");
-        console.log(accessToken);
-
-        //inspect token
-        //https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/token/introspect
-
-        //user info
-        //https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/userinfo
-
+        //const oAuthCode = await sealApi.createCode(code)
+        const accessToken = await sealApi.getAccessTokenSEAL();
+        return;
         const user = await sealApi.getUserInfo(accessToken);
-        let payload  = {};
-        //Create paylaod based on info received from SEAL
-        payload["email"] = user.email;
-        console.log("New Login, payload content: \n", payload);
 
-        let parsedPayload = UtilsRoutes.createPayload(payload, true);
+        /*
+        let accessToken = await sealApi.getAccessTokenSEAL(code, async (error,response) => {
+            console.log(response);
+            console.log("accessToken is: ");
+            console.log(accessToken);
+            //inspect token
+            //https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/token/introspect
 
-        console.log("New Login, payload content after Solid: \n", parsedPayload);
-        const qualichainBearerToken = await UtilsRoutes.createBearerToken(parsedPayload);
-        const identityToken = await UtilsRoutes.createIdentityToken(qualichainBearerToken, parsedPayload, true);
+            //user info
+            //https://dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/userinfo
 
-        UtilsRoutes.replySuccess(res, identityToken, "Logged in through SEAL");
-        //UtilsRoutes.replySuccess(res,"",accessToken)
+            const user = await sealApi.getUserInfo(accessToken);
+            let payload  = {};
+            //Create paylaod based on info received from SEAL
+            payload["email"] = user.email;
+            console.log("New Login, payload content: \n", payload);
+
+            let parsedPayload = UtilsRoutes.createPayload(payload, true);
+
+            console.log("New Login, payload content after Solid: \n", parsedPayload);
+            const qualichainBearerToken = await UtilsRoutes.createBearerToken(parsedPayload);
+            const identityToken = await UtilsRoutes.createIdentityToken(qualichainBearerToken, parsedPayload, true);
+
+            UtilsRoutes.replySuccess(res, identityToken, "Logged in through SEAL");
+            //UtilsRoutes.replySuccess(res,"",accessToken)
+        });
+    */
     }   catch (e) {
         UtilsRoutes.replyFailure(res,e,"Error retrieving access token");
         console.log(e);
     }
 });
+
 
 
 router.post('/checkRecruiter', /*passport.authenticate('jwt', {session: false}),*/ async (req, res) => {
@@ -231,6 +247,5 @@ router.post('/checkRecruiter', /*passport.authenticate('jwt', {session: false}),
         throw new Error(e);
     }
 });
-
 
 module.exports = router;
