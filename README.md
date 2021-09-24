@@ -2,11 +2,11 @@
 
 
 
-# Qualichain IAM & Recruiting webapp
-
+# Qualichain Identity and  Access Control & Recruiting webapp
 
 ![web][logo]
 
+This repository contains the code for the Identity and Access Control Module of the Qualichain platform and also for the Public Staffing pilot.
 
 [logo]: https://web.ist.utl.pt/~ist180970/assets/img/qualichain-logo.png
 A webapp for the Qualichain Portuguese PoC. The Qualichain Portuguese PoC is about the interaction between a higher education organization, IST (or Técnico Lisboa), and a recruiting organization, AMA. A full version of the PoC source code is provided in another repository (https://github.com/QualiChain/consortium). 
