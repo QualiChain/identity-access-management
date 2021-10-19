@@ -50,6 +50,28 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
     }
   }
 
+  getCurrentUserEmail() {
+    this.user = this.loadUserProfile();
+    if (this.user != null && this.user !== undefined) {
+      return this.user.email;
+    } else {
+      return null;
+    }
+  }
+
+  getCurrentUserAddress() {
+    this.user = this.loadUserProfile();
+    if (this.user != null && this.user !== undefined) {
+      if (this.user.email === 'ntua_academic@outlook.com' || this.user.email === 'asep_dissemination@outlook.com') {
+        return '0xe82F6583931E735D21cda07b28dDde1dE3D314FD';
+      } else {
+        return '0x2CefB619218825C0c670D8E77f7039e0693E1dDC';
+      }
+    } else {
+      return '0x2CefB619218825C0c670D8E77f7039e0693E1dDC';
+    }
+  }
+
 
   changePassword(formData) {
 

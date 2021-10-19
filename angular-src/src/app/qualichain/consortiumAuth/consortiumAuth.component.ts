@@ -57,9 +57,12 @@ export class ConsortiumAuthComponent implements OnInit {
           return false;
       }
 
+      const address = this.authService.getCurrentUserAddress();
+
       const formData: FormData = new FormData();
       formData.append('certificate', (<HTMLInputElement>document.getElementById('myCertificate')).files[0]);
       formData.append('civilId', data.civilId);
+      formData.append('address', address);
 
       console.log('DATA:');
       console.log(data);

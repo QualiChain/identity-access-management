@@ -95,7 +95,7 @@ router.post('/validateCertificate', /*passport.authenticate('jwt', {session: fal
 
 router.post('/validateCertificateAuth', passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
-        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|VALIDATE|INCOMING-REQUEST|USER ${req.user.username}`);
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|VALIDATE|INCOMING-REQUEST|USER ${req.user.email}`);
         //req.fields contains non-file fields
         //req.files contains files
         console.log(req.fields)
@@ -155,7 +155,7 @@ router.post('/validateCertificateAuth', passport.authenticate('jwt', {session: f
             }
         });
     } catch (e) {
-        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|VALIDATE|ERROR|USER ${req.user.username}`);
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|VALIDATE|ERROR|USER ${req.user.email}`);
         UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
         throw new Error(e);
     }
@@ -224,12 +224,12 @@ router.post('/registerCertificate', /*passport.authenticate('jwt', {session: fal
 
 router.post('/registerCertificateAuth', passport.authenticate('jwt', {session: false}), async (req, res) => {
     try {
-        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|INCOMING-REQUEST|USER ${req.user.username}`);
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|INCOMING-REQUEST|USER ${req.user.email}`);
 
         const certificate = req.files.certificate;
         let fileBytes = fs.readFileSync(certificate.path);
 
-        await web3.eth.getTransactionCount(account, 'pending', (err, count) => {
+        await web3.eth.getTransactionCount(req.fields.address, 'pending', (err, count) => {
             txCount = count;
         });
 
@@ -252,7 +252,7 @@ router.post('/registerCertificateAuth', passport.authenticate('jwt', {session: f
             nonce: accountNonce,
             gasLimit: web3.utils.toHex(3000000),
             gasPrice: web3.utils.toHex(web3.utils.toWei('100', 'gwei')),
-            from: account,
+            from: req.fields.address,
             to: contractAddress,
             data: data,
             chainId: await web3.eth.net.getId()
@@ -277,7 +277,7 @@ router.post('/registerCertificateAuth', passport.authenticate('jwt', {session: f
             }
         });
     } catch (e) {
-        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|ERROR|USER ${req.user.username}`);
+        ba_logger.ba(`BA|QUALICHAIN-RECRUITING|REGISTER|ERROR|USER ${req.user.email}`);
         UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
         throw new Error(e);
     }

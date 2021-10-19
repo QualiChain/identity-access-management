@@ -14,8 +14,11 @@
       <h1 class="h3 mb-3 font-weight-normal">Recruiting Component</h1>
       <label for="inputDID" class="sr-only">DID</label>
 
-    <input name="inputDID" ngModel type="text" id="inputDID" class="form-control" placeholder="IssuerID (Smart contract address WITHOUT did:ethr:)" required autofocus>
-    <label for="inputCivilID" class="sr-only">CivilID</label>
+      <select name="inputDID" id="inputDID" class="form-control" required autofocus>
+          <option value="Inesc">INESC-ID</option>
+          <option value="Ntua">NTUA</option>
+      </select>
+      <label for="inputCivilID" class="sr-only">CivilID</label>
         <br>
     <input name="inputCivilID" ngModel type="text" id="inputCivilID" class="form-control" placeholder="CivilID (e.g., 12345678)" required>
         <br>
