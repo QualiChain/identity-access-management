@@ -50,21 +50,13 @@ export class RecruitingAuthComponent implements OnInit {
   }
 
   validateCertificate(form: any) {
-      const inputDID = <HTMLSelectElement>document.getElementById('inputDID');
+      const entity = <HTMLSelectElement><unknown>document.getElementById('entity');
 
       const data = {
           certificate: (<HTMLInputElement>document.getElementById('myCertificate')).files[0],
-          did:  inputDID.options[inputDID.selectedIndex].text,
+          entity:  entity.options[entity.selectedIndex].text,
           civilId: form.value.inputCivilID
       };
-
-      const accountAddress = data.did === 'INESC-ID' ? '0x2CefB619218825C0c670D8E77f7039e0693E1dDC' : '0xe82F6583931E735D21cda07b28dDde1dE3D314FD';
-      console.log(accountAddress);
-
-      if (!this.validateService.validateAddress(accountAddress))  {
-          this.flashMessage.show('Please insert a valid address (see examples)', {cssClass: 'alert-danger', timeout: 3000});
-          return false;
-      }
 
       if (!this.validateService.validateCivilID(data.civilId))  {
           this.flashMessage.show('Please insert a valid Civil ID (integer)', {cssClass: 'alert-danger', timeout: 3000});
@@ -78,23 +70,23 @@ export class RecruitingAuthComponent implements OnInit {
 
       const formData: FormData = new FormData();
       formData.append('certificate', (<HTMLInputElement>document.getElementById('myCertificate')).files[0]);
-      formData.append('did', accountAddress);
+      formData.append('entity', data.entity);
       formData.append('civilId', data.civilId);
 
       this.qualichainAuthService.validateCertificate(formData).subscribe(data => {
-          this.status = 'Done'
+          this.status = 'Done';
           console.log(data);
           if (data.succeeded) {
                 this.error = false;
-                this.validationStatus = `| ${inputDID} | Success`;
+                this.validationStatus = `| ${entity.options[entity.selectedIndex].text} | Success`;
                 this.response = data.message + ' - Certificate hash is: ' + data.response_data;
                 document.getElementById('responseBoxError').innerHTML = '';
         }   else {
                 this.error = true;
-                this.validationStatus = `| ${inputDID} | Error`;
+                this.validationStatus = `| ${entity.options[entity.selectedIndex].text} | Error`;
                 this.response = data.message;
-                this.errorBox = data.error;
-                document.getElementById('responseBoxError').innerText = data.error
+                this.errorBox = data.error.message === undefined ? data.error : data.error.message;
+                document.getElementById('responseBoxError').innerText = data.error.message === undefined ? data.error : data.error.message;
           }
 
       }, error => {

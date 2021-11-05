@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers} from "@angular/http";
+import { Http, Headers} from '@angular/http';
 import { map } from 'rxjs/operators';
 import {JwtHelperService} from '@auth0/angular-jwt';
-import {Vars} from "../../../.env";
+import {Vars} from '../../../.env';
 
 @Injectable()
 export class AuthService {
@@ -63,15 +63,14 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
     this.user = this.loadUserProfile();
     if (this.user != null && this.user !== undefined) {
       if (this.user.email === 'ntua_academic@outlook.com' || this.user.email === 'asep_dissemination@outlook.com') {
-        return '0xe82F6583931E735D21cda07b28dDde1dE3D314FD';
+        return 'NTUA';
       } else {
-        return '0x2CefB619218825C0c670D8E77f7039e0693E1dDC';
+        return 'INESC-ID';
       }
     } else {
-      return '0x2CefB619218825C0c670D8E77f7039e0693E1dDC';
+      return 'INESC-ID';
     }
   }
-
 
   changePassword(formData) {
 
