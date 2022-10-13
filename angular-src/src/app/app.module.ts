@@ -13,14 +13,12 @@ import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AuthGuardService } from './services/auth-guard.service';
 import { FooterComponent } from './general/footer/footer.component';
 import { MockBackend } from '@angular/http/testing';
-import { AgmCoreModule } from '@agm/core';
 import { PrivacyPolicyComponent } from './general/privacy-policy/privacy-policy.component';
 import { Vars } from '../../.env';
 import { ChartsModule } from 'ng2-charts';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RecruitingComponent } from './qualichain/recruiting/recruiting.component';
 import { RecruitingAuthComponent } from './qualichain/recruitingAuth/recruitingAuth.component';
-import { ConsortiumComponent } from './qualichain/consortium/consortium.component';
 import { ConsortiumAuthComponent } from './qualichain/consortiumAuth/consortiumAuth.component';
 import { RegisterComponent} from './general/register/register.component';
 import { CompanyRegisterComponent } from './general/register/company-register/company-register.component';
@@ -28,12 +26,12 @@ import { LoginComponent } from './general/login/login.component';
 import { ProfileComponent } from './general/profile/profile.component';
 import { LoginStudentComponent } from './general/login/login-student/login-student.component';
 import { LoginSealComponent } from './general/login/login-seal/login-seal.component';
+import { ChangePwComponent } from './general/login/change-pw/change-pw.component';
 
 const appRoutes: Routes = [
     {path: '', component: HomeComponent},
     {path: 'recruiting', component: RecruitingComponent},
     {path: 'recruitingAuth', component: RecruitingAuthComponent, canActivate: [AuthGuardService]},
-    {path: 'consortium', component: ConsortiumComponent},
     {path: 'consortiumAuth', component: ConsortiumAuthComponent, canActivate: [AuthGuardService]},
     {path: 'register', children: [
             {path: '', component: RegisterComponent},
@@ -41,8 +39,18 @@ const appRoutes: Routes = [
         ]},
     {path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService]},
 
+    /*
+    {path: 'auth', children:    [
+            {path: '.well-known', children: [
+                    {path:'openid-configuration', redirectTo: 'http://web.ist.utl.pt/~ist180970/qualichain/.wellknown'}
+                ]},
+            {path: 'jwks', redirectTo: 'http://web.ist.utl.pt/~ist180970/qualichain/jwks'}
+        ]},
+    */
+
     {path: 'login', children: [
             {path: '', component: LoginComponent},
+            {path: 'changePassword', component: ChangePwComponent},
             {path: 'callback/seal', component: LoginSealComponent}
         ]},
 
@@ -63,10 +71,10 @@ const appRoutes: Routes = [
         PrivacyPolicyComponent,
         RecruitingComponent,
         RecruitingAuthComponent,
-        ConsortiumComponent,
         ConsortiumAuthComponent,
         LoginStudentComponent,
-        LoginSealComponent
+        LoginSealComponent,
+        ChangePwComponent
 
     ],
     imports: [
@@ -76,6 +84,8 @@ const appRoutes: Routes = [
         NgbModule,
         ReactiveFormsModule,
         ChartsModule,
+        RouterModule.forRoot(appRoutes),
+        FlashMessagesModule,
         JwtModule.forRoot({
             config: {
                 whitelistedDomains: ['localhost:3001', 'localhost:8080', 'qualichain.herokuapp.com',
@@ -83,11 +93,6 @@ const appRoutes: Routes = [
                                     'dss1.aegean.gr/auth/realms/SSI/protocol/openid-connect/auth']
             }
         }),
-        RouterModule.forRoot(appRoutes),
-        AgmCoreModule.forRoot({
-            apiKey: Vars.GOOGLE_MAPS,
-        }),
-        FlashMessagesModule,
     ],
     providers: [
         ValidateService,

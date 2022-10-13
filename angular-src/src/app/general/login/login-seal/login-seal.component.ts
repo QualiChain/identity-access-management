@@ -16,12 +16,14 @@ export class LoginSealComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((params: Params) => {
       const code = params['session_state'];
-      const scope = params['state'];
-      this.authService.loginSeal(code, scope).subscribe( response => {
+      const state = params['state'];
+      console.log(params);
+      this.authService.loginSeal(code, state).subscribe( response => {
         this.flashMessage.show(JSON.stringify(response), {cssClass: 'alert-warning', timeout: 5000});
         if (response.succeeded){
           console.log(response);
           this.authService.storeData(response.response_data.user, response.response_data.token);
+          this.router.navigate(['profile']);
         } else {
           this.flashMessage.show(response.message, {cssClass: 'alert-danger', timeout: 5000});
           console.log(response);

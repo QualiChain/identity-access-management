@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers} from "@angular/http";
+import { Http, Headers} from '@angular/http';
 import { map } from 'rxjs/operators';
 import {JwtHelperService} from '@auth0/angular-jwt';
-import {Vars} from "../../../.env";
+import {Vars} from '../../../.env';
 
 @Injectable()
 export class AuthService {
@@ -50,6 +50,43 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
     }
   }
 
+  getCurrentUserEmail() {
+    this.user = this.loadUserProfile();
+    if (this.user != null && this.user !== undefined) {
+      return this.user.email;
+    } else {
+      return null;
+    }
+  }
+
+  getCurrentUserAddress() {
+    this.user = this.loadUserProfile();
+    if (this.user != null && this.user !== undefined) {
+      if (this.user.email === 'ntua_academic@outlook.com' || this.user.email === 'asep_dissemination@outlook.com') {
+        return 'NTUA';
+      } else {
+        return 'INESC-ID';
+      }
+    } else {
+      return 'INESC-ID';
+    }
+  }
+
+  changePassword(formData) {
+
+    const headers = new Headers();
+    if (Vars.ENVIRONMENT === 'PRODUCTION')    {
+      this.login_url = "https://qualichain.herokuapp.com/users/changePassword";
+    } else if (Vars.ENVIRONMENT === 'INTEGRATION')    {
+      this.login_url = "https://qualichain.herokuapp.com/users/changePassword";
+    } else if (Vars.ENVIRONMENT === 'TEST')    {
+      this.login_url = "http://localhost:8080/users/changePassword";
+    }
+
+    headers.append('Content-Type', 'application/json');
+    // @ts-ignore
+    return this.http.post(this.login_url, formData, { observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));
+  }
 
   authUser(formData) {
 
@@ -86,7 +123,7 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
   }
 
 
-  loginSeal(code, scope) {
+  loginSeal(code, state) {
     let url: string;
     if (Vars.ENVIRONMENT === 'PRODUCTION')    {
       url = "auth/login/seal";
@@ -97,7 +134,7 @@ constructor(private http:Http, public jwtHelper: JwtHelperService) { }
     }
     const formData: FormData = new FormData();
     formData.append('code', code);
-    formData.append('scope', scope);
+    formData.append('state', state);
     const headers = new Headers();
     // @ts-ignore
     return this.http.post(url, formData, { headers: headers, observe: 'events',  reportProgress: true }).pipe(map(res => res.json()));

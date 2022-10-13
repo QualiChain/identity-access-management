@@ -8,7 +8,17 @@ const Iam = require('../routes/iam');
 const ba_logger = require('../log/ba_logger');
 const passport = require('passport');
 const NtuaAPI = require('../ntua-api/ntua');
+const uuid = require("uuid");
 require('dotenv').load();
+const nodemailer = require("nodemailer");
+let MAIL_HOST = process.env.MAIL_HOST;
+let MAIL_PORT = process.env.MAIL_PORT;
+let MAIL_PASSWORD = process.env.MAIL_PASSWORD;
+let MAIL_USERNAME = process.env.MAIL_USERNAME;
+let MAIL_FROM_FIELD = process.env.MAIL_FROM_FIELD;
+let MAIL_FROM_DOMAIN = process.env.MAIL_FROM_DOMAIN;
+
+
 const DB_SECRET = process.env.DB_SECRET;
 const JWT_ALGORITHM = process.env.JWT_ALGORITHM;
 const JWT_LIFETIME = process.env.JWT_LIFETIME;
@@ -167,6 +177,80 @@ router.post('/login', (req, res) => {
 
     });
 });
+
+router.post('/changePassword', /*passport.authenticate('jwt', {session: false}),*/ async (req, res) => {
+    const ip = req.connection.remoteAddress;
+    let userEmail = req.fields.email;
+
+    ba_logger.ba('BA|ChangePW|Attempt of changing the password of ' + userEmail + ' by ' + ip);
+    console.log('BA|ChangePW|Attempt of changing the password of ' + userEmail + ' by ' + ip);
+
+    if (!userEmail) {
+        return UtilsRoutes.replyFailure(res,"","Please provide a user email to recover the password");
+    }
+
+    try     {
+        DBAccess.users.getUserByEmail(userEmail, async (err, user)=>   {
+            if (err || !user)  {
+                return UtilsRoutes.replyFailure(res, err, "No such user" );
+            }
+
+            const nonce = uuid.v4();
+            const newPassword = nonce.replace(/-/g,'');
+            const hashedPassword = await Utils.returnHash(newPassword);
+            const now = Utils.getTime();
+            console.log("hashedPassword is:");
+            console.log(hashedPassword);
+            DBAccess.users.changePassword(userEmail, hashedPassword, async (err, user) =>    {
+                if (err)    {
+                    UtilsRoutes.replyFailure(res,err,"Error setting up the new password");
+                    throw new Error (err);
+                }
+                if (user)  {
+
+                    // create reusable transporter object using the default SMTP transport
+                    let transporter = nodemailer.createTransport({
+                        host: MAIL_HOST,
+                        port: MAIL_PORT,
+                        secure: false, // true for 465, false for other ports
+                        auth: {
+                            user: MAIL_USERNAME, // generated ethereal user
+                            pass: MAIL_PASSWORD, // generated ethereal password
+                        },
+                    });
+
+                    // send mail with defined transport object
+                    let info = await transporter.sendMail({
+                        from: `"${MAIL_FROM_FIELD}" <${MAIL_FROM_DOMAIN}>`, // sender address
+                        to: userEmail, // list of receivers
+                        subject: "Qualichain Password Reset", // Subject line
+                        text: "Your new password from Qualichain, generated at " + now +
+                            " is " + "<b>" + newPassword + "</b>", // plain text body
+                        html: "Your new password from Qualichain, generated at " + now +
+                        " is " + "<b>" + newPassword + "</b>", // html body
+                    });
+
+                    ba_logger.ba("BA|PWChanged|Sent email to %s", info.accepted);
+                    console.log("BA|PWChanged|Sent email to %s", info.accepted);
+                    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+                    return UtilsRoutes.replySuccess(res, true, "Password has been changed. Please check your e-mail." );
+                }
+                else {
+                    return UtilsRoutes.replySuccess(res, false, "There was a problem changing your password");
+                }
+            })
+
+        });
+
+    } catch (e) {
+        ba_logger.ba("BA||ERROR|");
+        UtilsRoutes.replyFailure(res,JSON.stringify(e),"An error has been encountered");
+        throw new Error(e);
+    }
+});
+
+
+
 
 router.post('/testNTUA', passport.authenticate('jwt', {session: false}), async (req, res) =>     {
     if(!Iam.isAdministrator(req))    {

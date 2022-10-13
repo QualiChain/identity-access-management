@@ -13,6 +13,7 @@ class AccessUser {
         this.getUserByEmail = getUserByEmail;
         this.getUsers = getUsers;
         this.addUser = addUser;
+        this.changePassword = changePassword;
     }
 }
 
@@ -62,4 +63,14 @@ function getUserByEmail(email, callback) {
 
 async function getUsers() {
     return await User.find().exec();
+}
+
+function changePassword(email, newPassword, callback) {
+    let conditions = {email: email};
+    let update = { $set: { password: newPassword }};
+    let options = {
+        //new: true
+    };
+
+    User.findOneAndUpdate(conditions, update, options, callback);
 }

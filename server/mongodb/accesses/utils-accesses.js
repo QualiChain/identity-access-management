@@ -14,8 +14,10 @@ function Utils() {
     this.comparePassword = comparePassword;
     this.comparePasswordAsync = comparePasswordAsync;
     this.contains = contains;
+    this.returnHash = returnHash;
     this.utc = new Date().toJSON().slice(0,10).replace(/-/g,'/');
     this.time = new Date().toJSON().slice(0,16).replace(/-/g,'/') + "h";
+    this.getTime = getTime;
 }
 
 let utils = module.exports = exports = new Utils;
@@ -36,6 +38,9 @@ function quickSave(item, callback, type) {
         });
 }
 
+function getTime()  {
+    return new Date().toJSON().slice(0,16).replace(/-/g,'/') + "h";
+}
 function contains(array, object)    {
     return array.some(e => e === object)
 }
@@ -119,4 +124,9 @@ function comparePassword(candidatePw, hash, callback) {
 
 async function comparePasswordAsync (candidatePw, pwHash)   {
     return  bcrypt.compare(candidatePw, pwHash)
+}
+
+async function returnHash(password)   {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
 }

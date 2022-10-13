@@ -57,9 +57,13 @@ export class ConsortiumAuthComponent implements OnInit {
           return false;
       }
 
+
+      const entity = this.authService.getCurrentUserAddress();
+
       const formData: FormData = new FormData();
       formData.append('certificate', (<HTMLInputElement>document.getElementById('myCertificate')).files[0]);
       formData.append('civilId', data.civilId);
+      formData.append('entity', entity);
 
       console.log('DATA:');
       console.log(data);
@@ -71,15 +75,15 @@ export class ConsortiumAuthComponent implements OnInit {
           console.log(data);
           if (data.succeeded) {
               this.error = false;
-              this.validationStatus = 'Success';
+              this.validationStatus = `| ${entity} | Success`;
               this.response = data.message + ' - Transaction hash is: ' + data.response_data;
               document.getElementById('responseBoxError').innerHTML = '';
           }   else {
               this.error = true;
-              this.validationStatus = 'Error';
+              this.validationStatus = `| ${entity} | Error`;
               this.response = data.message;
-              this.errorBox = data.error;
-              document.getElementById('responseBoxError').innerText = data.error;
+              this.errorBox = data.error.message === undefined ? data.error : data.error.message;
+              document.getElementById('responseBoxError').innerText = data.error.message === undefined ? data.error : data.error.message;
           }
 
       }, error => {

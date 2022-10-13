@@ -22,8 +22,8 @@
                         <p>hash code</p>
                     </a>
                 </li> -->
-                <li [routerLinkActive]="['active']" class="nav-item">
-                    <a class="nav-link" [routerLink]="isLoggedIn() ? ['/consortiumAuth'] : ['/consortium']"
+                <li class="nav-item" *ngIf="isLoggedIn()">
+                    <a class="nav-link" [routerLink]="['/consortiumAuth']"
                        [style.border-bottom]="isArticles() ? '#00BFFD solid 2px' : 'white solid 2px'">
                         <p>Consortium</p>
                     </a>

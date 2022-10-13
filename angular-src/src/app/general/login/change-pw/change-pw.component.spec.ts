@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConsortiumComponent } from './consortium.component';
+import { ChangePwComponent } from './change-pw.component';
 
-describe('ConsortiumComponent', () => {
-  let component: ConsortiumComponent;
-  let fixture: ComponentFixture<ConsortiumComponent>;
+describe('ChangePwComponent', () => {
+  let component: ChangePwComponent;
+  let fixture: ComponentFixture<ChangePwComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConsortiumComponent ]
+      declarations: [ ChangePwComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConsortiumComponent);
+    fixture = TestBed.createComponent(ChangePwComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
